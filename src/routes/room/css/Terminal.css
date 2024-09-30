@@ -1,0 +1,20 @@
+
+
+.terminal-container {
+    height: 100%;
+    width: 100%;
+    background: var(--bg-1);
+    box-sizing: border-box;
+    padding-left: 20px;
+    padding-top: 20px;
+    height: 100%;
+}
+
+.chat-footer {
+    resize: none;
+    padding: 10px;
+    box-sizing: border-box;
+    background: var(--bg-3);
+    outline: none;
+    ;
+}

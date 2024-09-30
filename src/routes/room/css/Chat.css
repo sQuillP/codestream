@@ -1,0 +1,15 @@
+.stream-chat-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* flex-grow: 1; */
+    height: 100%;
+}
+
+
+.chat-stream-text {
+    width: 100%;
+    height: 100%;
+    flex-grow: 1;
+    background: orange;
+}

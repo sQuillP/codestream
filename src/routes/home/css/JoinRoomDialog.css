@@ -1,0 +1,26 @@
+.jr-input {
+    background: var(--bg-4);
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    padding: 14px;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 450px;
+    color: white;
+}
+
+
+.jr-input-row label {
+    margin-bottom: 5px;
+}
+
+
+.jr-input-row {
+    margin-top: 30px;
+}
+
+
+.jr-input-row > * {
+    display: block;
+}

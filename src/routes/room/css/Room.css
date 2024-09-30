@@ -1,0 +1,52 @@
+
+
+.devroom-container {
+    background: var(--bg-1);
+    height: 100vh;
+    display: flex;
+    ;
+}
+
+.editor-wrapper {
+    width: 50%;
+    resize: vertical;
+    display: flex;
+}
+
+.resize {
+    width: 20px;
+    background: black;
+    display: flex;
+    align-items: center;
+    cursor: col-resize;
+}
+
+
+.resize-horizontal {
+    height: 10px;
+    background: var(--bg-2);
+    cursor: row-resize;
+    width: 100%;
+}
+
+.devroom-right-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.devroom-horizontal-wrapper {
+    display: flex;
+}
+
+
+.tab-section {
+    background-color: blue;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.devroom-right-col {
+    width: 100%;
+}
