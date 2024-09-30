@@ -7,6 +7,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
+import {
+  MeetingProvider
+} from '@videosdk.live/react-sdk';
 
 import Home from './routes/home/Home';
 import Room from './routes/room/Room';
@@ -42,9 +45,9 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <RouterProvider router={router}/>
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <RouterProvider router={router}/>
+      </ThemeProvider>
   </React.StrictMode>
 );
 

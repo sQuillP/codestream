@@ -2,14 +2,29 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    /* flex-grow: 1; */
-    height: 100%;
+    flex-grow: 1;
+    position: relative;
+    overflow-y: auto;
+    border-radius: 5px;
+    margin-top: 5px;
+
 }
 
 
 .chat-stream-text {
     width: 100%;
+    overflow-y: auto;
+    position: absolute;
     height: 100%;
-    flex-grow: 1;
-    background: orange;
+}
+
+
+.chat-footer {
+    color: white;
+    width: 100%;
+    font-size: 1.0rem;
+    border-radius: 5px;
+    box-sizing: border-box;
+    padding-left: 30px;
+    padding-right: 30px;
 }
