@@ -1,0 +1,28 @@
+.navbar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 8vh;
+    /* max-height: 8vh; */
+    background: rgb(47, 49, 54);
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    border-bottom: 5px solid var(--bg-4);
+}
+
+.room-id-container >*{
+    display: block;
+}
+
+
+.room-logo {
+    text-align: center;
+    font-size: 2rem;
+    font-family: sans-serif;
+    background: -webkit-linear-gradient(0deg, #ff4f40 0%, #f4d 99.99%);    
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 400;
+    cursor: pointer;
+}

@@ -2,7 +2,8 @@
 
 .devroom-container {
     background: var(--bg-1);
-    height: 100vh;
+    height: 93vh;
+    margin-top: 8vh;
     display: flex;
     ;
 }

@@ -2,18 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
-import {
-  createBrowserRouter,
-  RouterProvider,
-} from "react-router-dom";
-
-import {
-  MeetingProvider
-} from '@videosdk.live/react-sdk';
-
-import Home from './routes/home/Home';
-import Room from './routes/room/Room';
-
+import App from './App';
 
 
 import { ThemeProvider, createTheme } from '@mui/material/styles';
@@ -30,23 +19,12 @@ const theme = createTheme({
 });
 
 
-const router = createBrowserRouter([
-  {
-    "path":"/",
-    "element": <Home/>
-  },
-  {
-    "path":"rooms/:roomId",
-    "element":<Room/>
-  }
-])
-
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
       <ThemeProvider theme={theme}>
-        <RouterProvider router={router}/>
+        <App/>
       </ThemeProvider>
   </React.StrictMode>
 );

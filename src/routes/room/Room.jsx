@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import Editor from '@monaco-editor/react';
 import {Stack, IconButton, Tooltip, Button} from '@mui/material';
 
+
 //components
 import HorizontalTab from "./components/HorizontalTab";
 import Terminal from "./components/Terminal";
@@ -19,8 +20,12 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 import ChooseLanguage from "./components/ChooseLanguage";
 import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
-import { MeetingProvider } from "@videosdk.live/react-sdk";
+import { MeetingProvider, useMeeting } from "@videosdk.live/react-sdk";
 import Navbar from "./components/Navbar";
+
+
+
+export const authToken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIwNGE3MDNhNC02ODQ3LTRhNDYtOGNiZC04N2Q4MGVmMWM5ZGEiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcyNzQ3NzY5NCwiZXhwIjoxNzI4MDgyNDk0fQ.GqTosSqxTXvxQvGNCn-yKIx_q5LzVtwe9ghvNgQy11Y';
 
 export default function Room() {
 
@@ -45,10 +50,23 @@ export default function Room() {
     })
     const lconfig = languages[language];
 
-    console.log('selected language', language)
 
     //Either terminal or chat
     const [selectedTab, setSelectedTab] = useState("terminal");
+
+
+    //videoSDK stream state
+    const { join, participants} = useMeeting({
+
+        onMeetingJoined:()=> {
+            console.log("Joined meeting!");
+        },
+        onMeetingLeft:()=> {
+            console.log("meeting is done!")
+        },
+
+
+    })
 
 
 
@@ -90,15 +108,7 @@ export default function Room() {
 
 
     return (
-        <MeetingProvider
-            config={{
-                meetingId:'abc123',
-                micEnabled: true,
-                webcamEnabled: true,
-                name:"C.J Wilikers"
-            }}
-            token="abc123"
-        >
+        <>
             <SettingsDialog
                 open={openSettingsDialog}
                 onClose={()=> setOpenSettingsDialog(false)}
@@ -234,7 +244,7 @@ export default function Room() {
                     </div>
                 </div>
             </div>
-        </MeetingProvider>
+        </>
     )
 
 }

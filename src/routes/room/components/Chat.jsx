@@ -5,7 +5,7 @@ import SendIcon from '@mui/icons-material/Send';
 
 
 
-export default memo(function Chat() {
+function Chat() {
 
     const [chatMessage, setChatMessage] = useState('');
     const [currentKey, setCurrentKey] = useState("");
@@ -81,4 +81,6 @@ export default memo(function Chat() {
             </Stack>
         </>
     )
-});
+}
+
+export default memo(Chat);

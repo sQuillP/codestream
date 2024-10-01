@@ -16,7 +16,7 @@ export default function ChooseLanguage({
 
     return (
         <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
-            <InputLabel id="choose-language">Language</InputLabel>
+            <InputLabel id="choose-language">Choose Language</InputLabel>
             <Select
                 labelId="choose-language"
                 id="demo-simple-select-standard"

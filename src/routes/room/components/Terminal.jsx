@@ -2,7 +2,7 @@ import "../css/Terminal.css";
 import { memo } from "react";
 
 
-export default memo(function Terminal({
+function Terminal({
     textContent
 }) {
 
@@ -12,4 +12,6 @@ export default memo(function Terminal({
             <p className="courier text">{textContent}</p>
         </div>
     )
-});
+}
+
+export default memo(Terminal);
