@@ -1,6 +1,6 @@
 import "./css/Room.css";
 import { useLocation } from "react-router-dom";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Editor from '@monaco-editor/react';
 import {Stack, IconButton, Tooltip, Button} from '@mui/material';
 
@@ -10,6 +10,7 @@ import HorizontalTab from "./components/HorizontalTab";
 import Terminal from "./components/Terminal";
 import Chat from "./components/Chat";
 import SettingsDialog from "./components/SettingsDialog";
+import MeetingScreen from "./components/MeetingScreen";
 
 //config
 import languages from "./config/languages";
@@ -20,12 +21,11 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 import ChooseLanguage from "./components/ChooseLanguage";
 import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
-import { MeetingProvider, useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting } from "@videosdk.live/react-sdk";
 import Navbar from "./components/Navbar";
 
 
 
-export const authToken='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIwNGE3MDNhNC02ODQ3LTRhNDYtOGNiZC04N2Q4MGVmMWM5ZGEiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcyNzQ3NzY5NCwiZXhwIjoxNzI4MDgyNDk0fQ.GqTosSqxTXvxQvGNCn-yKIx_q5LzVtwe9ghvNgQy11Y';
 
 export default function Room() {
 
@@ -51,15 +51,20 @@ export default function Room() {
     const lconfig = languages[language];
 
 
+
     //Either terminal or chat
     const [selectedTab, setSelectedTab] = useState("terminal");
 
 
     //videoSDK stream state
+    const [joined, setJoined] = useState(false);
+
+    // username, roomId
     const { join, participants} = useMeeting({
 
         onMeetingJoined:()=> {
             console.log("Joined meeting!");
+            setJoined(true);
         },
         onMeetingLeft:()=> {
             console.log("meeting is done!")
@@ -67,7 +72,6 @@ export default function Room() {
 
 
     })
-
 
 
     function editorDidMount(editor, monaco) {
@@ -105,6 +109,7 @@ export default function Room() {
     function onChangeLanguage(e) {
         setLanguage(e.target.value);
     }
+
 
 
     return (
@@ -166,6 +171,11 @@ export default function Room() {
                                                 Run Code
                                             </Button>
                                         </Tooltip>
+                                        <Button
+                                                onClick={join}
+                                            >
+                                                debug
+                                            </Button>
                                     </Stack>
                                     
                                 </Stack>
@@ -204,7 +214,10 @@ export default function Room() {
                         className="devroom-cam-container"
                         style={{height: `${verticalHeight}px`}}
                     >
-                        <p className="text">Camera goes here</p>
+                        <MeetingScreen
+                            joined={joined}
+                            participants={participants}
+                        />
                     </div>
                     <div 
                         className="tab-section"
@@ -213,6 +226,7 @@ export default function Room() {
                         <Stack
                             direction={'row'}
                             width={"100%"}
+                            style={{background:'var(--bg-1)'}}
                         >
                             <HorizontalTab
                                 title={"Terminal"}

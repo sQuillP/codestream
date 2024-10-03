@@ -4,7 +4,8 @@ import VideoGrid from "./VideoGrid";
 import VideoTrack from "./VideoTrack";
 
 function MeetingScreen({
-    participants
+    participants,
+    joined
 }) {
     
     const [displayMode, setDisplayMode] = useState('grid');
@@ -16,13 +17,13 @@ function MeetingScreen({
             <div className="view-options-container"></div>
             {
                 (()=> {
-                    if(displayMode === 'grid') {
+                    if(displayMode === 'grid' && joined === true) {
                         return (
                             <VideoGrid
                                 participants={participants}
                             />
                         )
-                    } else if(displayMode === 'track') {
+                    } else if(displayMode === 'track' && joined === true) {
                         return (
                             <VideoTrack
                                 participants={participants}

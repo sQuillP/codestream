@@ -1,10 +1,9 @@
 import "./css/Home.css";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MeetingRoomIcon from '@mui/icons-material/MeetingRoomRounded';
 import AddCircle from '@mui/icons-material/AddCircleOutlineRounded';
 import JoinRoomDialog from "./components/JoinRoomDialog";
-
+import { useState } from "react";
 
 
 
@@ -14,15 +13,20 @@ export default function Home() {
     const navigate = useNavigate();
     const bubbles = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
 
+    const[createNewMeeting, setCreateNewMeeting] = useState(false);
+
     
     function onCloseJoinRoomDialog() {
-        setOpenJoinRoomDialog(false);
+        setOpenJoinRoomDialog(false);   
     }
+
 
 
     function onSubmitRoomDetails({username, roomId}) {
         navigate("/rooms/"+roomId,{state:{username, roomId}});
     }
+
+
 
 
 
@@ -32,6 +36,7 @@ export default function Home() {
                 open={openJoinRoomDialog}
                 onClose={onCloseJoinRoomDialog}
                 onSubmitRoomDetails={onSubmitRoomDetails}
+                createNewMeeting={createNewMeeting}
             />
             <div className="bubbles">
                 {
@@ -46,7 +51,7 @@ export default function Home() {
                 <div className="button-container">
                     <button
                         className="home-button"
-                        onClick={()=> null}
+                        onClick={()=> { setCreateNewMeeting(true); setOpenJoinRoomDialog(true)}}
                     >
                         Create Room
                         <AddCircle sx={{marginLeft:'10px'}}/>
@@ -60,7 +65,6 @@ export default function Home() {
                     </button>
                 </div>
             </div>
-
         </div>
     )
 }

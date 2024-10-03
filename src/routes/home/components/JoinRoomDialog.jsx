@@ -1,29 +1,43 @@
 import "../css/JoinRoomDialog.css";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { useState } from "react";
+import { createMeeting, DEV_AUTH } from "../../../http/VideoSDK";
 
 const MAX_NAME_LENGTH = 25;
+
+
 
 export default function JoinRoomDialog({
     open,
     onClose,
-    onSubmitRoomDetails
+    onSubmitRoomDetails,
+    createNewMeeting
 }) {
 
     const [username, setUsername] = useState("");
     const [roomId, setRoomId] = useState("");
 
-
     function disableJoin() {
-        if(username.trim().length > MAX_NAME_LENGTH) {
+        if(username.trim().length > MAX_NAME_LENGTH && username.trim().length === 0) {
             return true;
         }
-        if(username.trim() === "" || roomId.trim() === "") {
-            return true;
+        if(createNewMeeting === false) {
+            if(username.trim() === "" || roomId.trim() === "") {
+                return true;
+            }
         }
+
         return false;
     }
 
+    async function handleSubmit() {
+        let roomIdClone = roomId
+        console.log('submitting form');
+        if(createNewMeeting === true) {
+            roomIdClone = await createMeeting({token: DEV_AUTH});
+        }
+        onSubmitRoomDetails({username,roomId:roomIdClone});
+    }
 
     return (
         <Dialog
@@ -32,7 +46,7 @@ export default function JoinRoomDialog({
             fullWidth
         >
             <DialogTitle fontSize={'2rem'} fontFamily={'inherit'}>
-                Join Existing Room
+                {createNewMeeting === true ? "Create new Room":"Join Existing Room"}
             </DialogTitle>
             <DialogContent>
                 <DialogContentText fontFamily={'inherit'} color="white">
@@ -46,14 +60,18 @@ export default function JoinRoomDialog({
                         className="jr-input"
                     />
                 </div>
-                <div className="jr-input-row">
-                    <label htmlFor=""> Enter Room ID <span className="required">*</span></label>
-                    <input 
-                        type="text" 
-                        className="jr-input"
-                        onChange={e => setRoomId(e.target.value)}
-                    />
-                </div>
+                {
+                    createNewMeeting === false && (
+                        <div className="jr-input-row">
+                            <label htmlFor=""> Enter Room ID <span className="required">*</span></label>
+                            <input 
+                                type="text" 
+                                className="jr-input"
+                                onChange={e => setRoomId(e.target.value)}
+                            />
+                        </div>
+                    )
+                }
             </DialogContent>
             <DialogActions>
                 <Button
@@ -68,7 +86,7 @@ export default function JoinRoomDialog({
                     sx={{textTransform:'unset'}}
                     variant='outlined'
                     disabled={disableJoin()}
-                    onClick={()=> onSubmitRoomDetails({username, roomId})}
+                    onClick={handleSubmit}
                 >Join</Button>
             </DialogActions>
         </Dialog>

@@ -1,0 +1,9 @@
+
+
+.loading-room-container {
+    height: 100vh;
+    background: var(--bg-1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
