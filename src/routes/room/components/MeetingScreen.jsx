@@ -8,13 +8,13 @@ function MeetingScreen({
     joined
 }) {
     
-    const [displayMode, setDisplayMode] = useState('grid');
-
+    const [displayMode, setDisplayMode] = useState('track');
+ 
     
     return (
-        <div className="meeting-screen-container">
+        <div style={{height:'100%', width:'100%', boxSizing:'border-box'}} className="meeting-screen-container">
             {/* Do this later */}
-            <div className="view-options-container"></div>
+            <div style={{position:'relative'}} className="view-options-container"></div>
             {
                 (()=> {
                     if(displayMode === 'grid' && joined === true) {

@@ -1,0 +1,17 @@
+/* TESTING */
+.video-gallerybox {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.video-gallery {
+    height: 110px;
+    display: flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    padding: 10px;
+}
+
+.video-gallerybox, .video-gallerybox {
+    scrollbar-width: none;
+}

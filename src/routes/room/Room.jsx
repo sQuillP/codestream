@@ -23,6 +23,8 @@ import ChooseLanguage from "./components/ChooseLanguage";
 import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
 import { useMeeting } from "@videosdk.live/react-sdk";
 import Navbar from "./components/Navbar";
+import ParticipantView from "./components/ParticipantView";
+import VideoTrack from "./components/VideoTrack";
 
 
 
@@ -59,19 +61,22 @@ export default function Room() {
     //videoSDK stream state
     const [joined, setJoined] = useState(false);
 
+    const [mainViewerId, setMainViewerId] = useState(null);
+
+
     // username, roomId
     const { join, participants} = useMeeting({
 
+        onParticipantJoined:(p)=> {
+            setMainViewerId(p.id);
+        },
         onMeetingJoined:()=> {
-            console.log("Joined meeting!");
             setJoined(true);
         },
         onMeetingLeft:()=> {
-            console.log("meeting is done!")
         },
+    });
 
-
-    })
 
 
     function editorDidMount(editor, monaco) {
@@ -90,7 +95,14 @@ export default function Room() {
             setHorizontalWidth(e.pageX);
         }
         if(verticalMouseDown === true) {
-            setVerticalHeight(e.pageY);
+            //navbar height in vh units.
+            const navbarHeight = window.innerHeight * (8 / 100);
+            //track height in pixels
+            const trackHeight= 125;
+            //total offset to subtract from
+            const totalOffset = navbarHeight + trackHeight;
+            setVerticalHeight(e.pageY - totalOffset);
+
         }
     }
 
@@ -110,10 +122,13 @@ export default function Room() {
         setLanguage(e.target.value);
     }
 
-
+    function handleSwitch(viewerid) {
+        setMainViewerId(viewerid);
+    }
 
     return (
         <>
+            
             <SettingsDialog
                 open={openSettingsDialog}
                 onClose={()=> setOpenSettingsDialog(false)}
@@ -212,17 +227,28 @@ export default function Room() {
                 <div className="devroom-right-col">
                     <div 
                         className="devroom-cam-container"
-                        style={{height: `${verticalHeight}px`}}
+                        style={{height: `${verticalHeight}px`, background:'pink'}}
                     >
-                        <MeetingScreen
-                            joined={joined}
-                            participants={participants}
-                        />
+                        {
+                            joined && participants && (
+                                <ParticipantView
+                                    height={'100%'}
+                                    width={'100%'}
+                                    participantId={!mainViewerId ? [...participants.keys()][0] : mainViewerId}
+                                    onClick={()=> null}
+                                />
+                            )
+                        }
                     </div>
+                    <VideoTrack 
+                        participants={participants}
+                        joined={joined}
+                        onClick={handleSwitch}
+                    />
+                    <div className="resize-horizontal"onMouseDown={onVerticalMouseDown}></div>
                     <div 
                         className="tab-section"
                     >
-                        <div className="resize-horizontal"onMouseDown={onVerticalMouseDown}></div>
                         <Stack
                             direction={'row'}
                             width={"100%"}

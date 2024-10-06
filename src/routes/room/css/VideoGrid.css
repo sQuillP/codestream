@@ -1,9 +1,10 @@
-
-
 .video-grid-container {
-    display: flex;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    ;
+    /* display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 5px;
+    padding: 10px;
+    grid-template-rows: repeat(auto-fit, minmax(150px, 1fr));
+    height: 100%;
+    width: 100%;;
+    place-content: center; */
 }
-

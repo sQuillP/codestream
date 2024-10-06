@@ -35,6 +35,7 @@ export default function JoinRoomDialog({
         console.log('submitting form');
         if(createNewMeeting === true) {
             roomIdClone = await createMeeting({token: DEV_AUTH});
+            console.log(`Roomidclone::: ${roomIdClone}`)
         }
         onSubmitRoomDetails({username,roomId:roomIdClone});
     }

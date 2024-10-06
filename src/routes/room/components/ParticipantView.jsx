@@ -1,19 +1,18 @@
-import { Box } from "@mui/material";
 import "../css/ParticipantView.css";
 
 import { useParticipant,  } from "@videosdk.live/react-sdk";
-import { useRef, useEffect, useMemo, useState,  } from "react";
+import { useRef, useEffect, useMemo, useState, memo } from "react";
 import ReactPlayer from "react-player";
 
 
 
 
 //Participant chat window.
-export default function ParticipantView(props) {
+export default memo(function ParticipantView(props) {
     const micRef = useRef(null);
     const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
       useParticipant(props.participantId);
-    console.log({webcamStream, micStream, webcamOn, micOn, isLocal, displayName})
+    // console.log({webcamStream, micStream, webcamOn, micOn, isLocal, displayName})
 
     const [calcWidth, setCalcWidth] = useState(0);
 
@@ -46,8 +45,11 @@ export default function ParticipantView(props) {
     }, [micStream, micOn]);
   
     return (
-      <Box 
-          className="pv-container">
+      <div 
+        className="pv-container"
+        style={{height: props.height, width: props.width, ...props.extraStyles}}
+        onClick={()=> props.onClick(props.participantId)}
+      >
         <audio ref={micRef} autoPlay playsInline muted={isLocal} />
         {webcamOn && (
           <ReactPlayer
@@ -69,6 +71,6 @@ export default function ParticipantView(props) {
         <div className="pv-footer">
             <p className="text">{displayName}</p>
         </div>
-      </Box>
+      </div>
     );
-  }
+  });

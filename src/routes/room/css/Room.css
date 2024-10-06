@@ -32,8 +32,9 @@
 }
 
 .devroom-right-col {
-    display: flex;
-    flex-direction: column;
+    /* display: flex;
+    flex-direction: column; */
+    height: 100%;
 }
 
 .devroom-horizontal-wrapper {
@@ -70,4 +71,7 @@
 
 .devroom-right-col {
     width: 100%;
+    overflow: hidden;
 }
+
+

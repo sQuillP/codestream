@@ -1,11 +1,9 @@
 .pv-container {
     position: relative;
-    /* height: 10%; */
-    /* padding-top: 56.25%; */
     background-color: green;
-    margin: 10px;
     border-radius: 10px;
     overflow: hidden;
+    /* display: inline-block; */
   }
   
 
