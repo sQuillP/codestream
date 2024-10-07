@@ -7,7 +7,6 @@
     overflow-y: auto;
     border-radius: 5px;
     margin-top: 5px;
-
 }
 
 
@@ -16,6 +15,8 @@
     overflow-y: auto;
     position: absolute;
     height: 100%;
+    padding: 30px;
+    box-sizing: border-box;
 }
 
 

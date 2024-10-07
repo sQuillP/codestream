@@ -1,3 +1,4 @@
+import { Avatar, Box } from "@mui/material";
 import "../css/ParticipantView.css";
 
 import { useParticipant,  } from "@videosdk.live/react-sdk";
@@ -24,6 +25,16 @@ export default memo(function ParticipantView(props) {
       }
     }, [webcamStream, webcamOn]);
 
+
+    function generateInitials() {
+      if (!displayName) return "AB";
+      const splitName = displayName.trim().split(/\s+/gi);
+      if(splitName.length === 1) {
+        return splitName[0].substring(0,2);
+      } else {
+        return splitName[0][0] + splitName[1][0]
+      }
+    }
    
 
     useEffect(() => {
@@ -51,7 +62,7 @@ export default memo(function ParticipantView(props) {
         onClick={()=> props.onClick(props.participantId)}
       >
         <audio ref={micRef} autoPlay playsInline muted={isLocal} />
-        {webcamOn && (
+        {webcamOn ? (
           <ReactPlayer
             //
             playsinline // extremely crucial prop
@@ -67,6 +78,12 @@ export default memo(function ParticipantView(props) {
               console.log(err, "participant video error");
             }}
           />
+        ): (
+          <Box height={'100%'} width={'100%'} display={'flex'} justifyContent={'center'} alignItems={'center'}>
+            <Avatar sx={{height:'50px', width:'50px'}}>
+              {generateInitials()}
+            </Avatar>
+          </Box>
         )}
         <div className="pv-footer">
             <p className="text">{displayName}</p>

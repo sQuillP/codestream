@@ -2,21 +2,43 @@ import { IconButton, Stack, Button } from "@mui/material";
 import "../css/Chat.css";
 import { memo, useState } from "react";
 import SendIcon from '@mui/icons-material/Send';
+import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import ChatItem from "./ChatItem";
+import { CHAT } from "../../../http/Channels";
 
 
+
+const dummy_messages = [
+    {senderName:'foo', message:'some very long message and string im very sorry.', senderId: new Date().getTime().toString()},
+    {senderName:'foo', message:'some very long message and string im very sorry.', senderId: new Date().getTime().toString()},
+    {senderName:'me', message:'some very long message and string im very sorry.', senderId: new Date().getTime().toString()},
+    {senderName:'foo', message:'some very long message and string im very sorry.', senderId: new Date().getTime().toString()},
+    {senderName:'foo', message:'some very long message and string im very sorry.', senderId: new Date().getTime().toString()},
+    {senderName:'foo', message:'some very long message and string im very sorry. this is yet another long message, you have failed the interview!', senderId: new Date().getTime().toString()},
+    {senderName:'me', message:'some very long message and string im very sorry.', senderId: new Date().getTime().toString()},
+    {senderName:'foo', message:'some very long message and string im very sorry.', senderId: new Date().getTime().toString()},
+    {senderName:'me', message:'some very long message and string im very sorry. how long can this be? It needs to be as long as can be....', senderId: new Date().getTime().toString()},
+    {senderName:'foo', message:'some very long message and string im very sorry.', senderId: new Date().getTime().toString()},
+];
 
 function Chat() {
 
     const [chatMessage, setChatMessage] = useState('');
     const [currentKey, setCurrentKey] = useState("");
 
-    // let boxes = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    let boxes = []
+    const meetingDetails = useMeeting();
+
+    const [videoChat, setVideoChat] = useState([]);
+
+    console.log(meetingDetails);
+
+    let boxes = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    // let boxes = []
 
     function handleSubmit() {
 
     }
-
+ 
     function handleKeyEnter(e) {
         console.log(e.key)
         setCurrentKey(e.key);
@@ -27,6 +49,30 @@ function Chat() {
     }
 
 
+    function onMessageReceived(message) {
+        const updatedMessages = [...videoChat, message];
+        setVideoChat(updatedMessages);
+    }
+
+    function onOldMessagesReceived(oldMessages) {
+        const updatedMessages = [...oldMessages];
+        setVideoChat(updatedMessages);
+    }
+
+    const { publish, messages } = usePubSub(CHAT, {
+        onMessageReceived,
+        onOldMessagesReceived,
+      });
+
+
+    function onSendMessage() {
+        try {
+            publish(chatMessage,{persist: true}, null);
+            setChatMessage("");
+        } catch(error) {
+            console.log("unable to show any messages");
+        }
+    }
 
     return (
         <>
@@ -36,18 +82,12 @@ function Chat() {
                         (()=> {
                             if(boxes.length !== 0) {
                                 return (
-                                    boxes.map((b,i) => {
+                                    dummy_messages.map((message,i) => {
                                         return (
-                                            <div
-                                                key={i}
-                                                style={{
-                                                    height: '50px',
-                                                    width:'50px',
-                                                    margin:'10px 0',
-                                                    background:'red'
-                                                }}
-                                            >
-                                            </div>
+                                            <ChatItem
+                                                message={message}
+                                                myId={meetingDetails.localParticipant}
+                                            />
                                         )
                                     })
                                 )
@@ -75,6 +115,7 @@ function Chat() {
                     endIcon={<SendIcon/>}
                     variant="contained"
                     sx={{textTransform:'none'}}
+                    onClick={()=> onSendMessage()}
                 >
                     Send
                 </Button>

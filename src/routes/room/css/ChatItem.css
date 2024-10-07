@@ -1,0 +1,13 @@
+.chat-item-container{
+
+}
+
+.chat-box {
+    background: var(--bg-3);
+    border-radius: 5px;
+    padding: 10px;
+    max-width: 55%;
+}
+
+.ci-chat-item {
+}

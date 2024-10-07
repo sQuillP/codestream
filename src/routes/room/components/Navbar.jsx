@@ -23,13 +23,15 @@ import { useMeeting } from "@videosdk.live/react-sdk";
 
 function Navbar() {
 
-    const {leave, toggleMic, toggleWebcam } = useMeeting();
+    const {leave, toggleMic, toggleWebcam, localMicOn, localWebcamOn } = useMeeting();
+
+
+    console.log('local mic on::',localMicOn);
 
 
     const [copyMessage, setCopyMessage] = useState("Copy room ID");
     const meetingId = "abc-123"
 
-    const [muted, setMuted] = useState(false);
     const [enableVideo, setEnableVideo] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
 
@@ -40,9 +42,6 @@ function Navbar() {
     }
 
 
-    function onToggleMic() {
-        setMuted(muted => !muted);
-    }
 
 
     function onToggleVideo() {
@@ -61,7 +60,6 @@ function Navbar() {
         <div className="navbar-container">
             <Stack height={'100%'} direction='row' alignItems={'center'} justifyContent={"space-between"}>
                 <div role="button"
-                    // onClick={()=> navigate('..')}
                 >
                     <h1 className="text room-logo">Codestreamer</h1>
                 </div>
@@ -87,14 +85,14 @@ function Navbar() {
                     gap={3}
                 >
                     <Tooltip
-                        title={muted ? "Unmute":"Mute"}
+                        title={localMicOn === false ? "Unmute":"Mute"}
                     >
                         <IconButton
                             size="large"
-                            onClick={onToggleMic}
+                            onClick={()=> toggleMic()}
                         >
                             {
-                                muted ? <MicOffRoundedIcon/> : <MicRoundedIcon/>
+                                localMicOn === false ? <MicOffRoundedIcon/> : <MicRoundedIcon/>
                             }
                         </IconButton>
                     </Tooltip>
@@ -105,10 +103,10 @@ function Navbar() {
                         <IconButton
                             size="large"
 
-                            onClick={onToggleVideo}
+                            onClick={(e) => toggleWebcam()}
                         >
                             {
-                                enableVideo===false ? <VideocamOffRoundedIcon/> : <VideocamRoundedIcon/>
+                                localWebcamOn===false ? <VideocamOffRoundedIcon/> : <VideocamRoundedIcon/>
                             }
                         </IconButton>
                     </Tooltip>

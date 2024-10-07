@@ -10,10 +10,10 @@ import HorizontalTab from "./components/HorizontalTab";
 import Terminal from "./components/Terminal";
 import Chat from "./components/Chat";
 import SettingsDialog from "./components/SettingsDialog";
-import MeetingScreen from "./components/MeetingScreen";
 
 //config
 import languages from "./config/languages";
+import {EDITOR, LANGUAGE} from "../../http/Channels";
 
 
 //icons
@@ -21,7 +21,7 @@ import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 import ChooseLanguage from "./components/ChooseLanguage";
 import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import Navbar from "./components/Navbar";
 import ParticipantView from "./components/ParticipantView";
 import VideoTrack from "./components/VideoTrack";
@@ -33,6 +33,7 @@ export default function Room() {
 
     const {state} = useLocation();
     const editorRef = useRef();
+
 
     //UI state for dragging windows
     const [horizontalWidth, setHorizontalWidth] = useState(600);
@@ -52,10 +53,31 @@ export default function Room() {
     })
     const lconfig = languages[language];
 
+    const [editorValue, setEditorValue] = useState(lconfig.defaultValue);
+    const [syncedEditor, setSyncedEditor] = useState(false);
+
+
+
+    function onEditorChanged(editorState) {
+        if(editorState === editorValue){
+            return;
+        }
+        // for extra details{editorContent: editorState}
+        setEditorValue(editorState);
+        publish(editorState ,null,null);
+
+    }
+
+    function onEditorReset() {
+        // editorRef.current.setValue(lconfig.defaultValue)
+        // publish(editorRef.current.getValue(), null, null);
+    }
 
 
     //Either terminal or chat
     const [selectedTab, setSelectedTab] = useState("terminal");
+
+    const [terminalContent, setTerminalContent] = useState('Output will appear in this terminal.');
 
 
     //videoSDK stream state
@@ -65,7 +87,7 @@ export default function Room() {
 
 
     // username, roomId
-    const { join, participants} = useMeeting({
+    const { join, participants, localParticipant} = useMeeting({
 
         onParticipantJoined:(p)=> {
             setMainViewerId(p.id);
@@ -75,8 +97,27 @@ export default function Room() {
         },
         onMeetingLeft:()=> {
         },
+
+        onSpeakerChanged: (speakerId) => {
+            setMainViewerId(speakerId);
+        }
     });
 
+    console.log(participants)
+
+
+
+    const { publish } = usePubSub(EDITOR, {
+        onMessageReceived: (message)=> {
+            setEditorValue(message.message);
+        }
+    });
+
+    const languagePubSub = usePubSub(LANGUAGE, {
+        onMessageReceived: (message)=> {
+            setLanguage(message.message);
+        }
+    })
 
 
     function editorDidMount(editor, monaco) {
@@ -95,14 +136,13 @@ export default function Room() {
             setHorizontalWidth(e.pageX);
         }
         if(verticalMouseDown === true) {
-            //navbar height in vh units.
+            //navbar height in vh units. currently set to 8vh in the css file.
             const navbarHeight = window.innerHeight * (8 / 100);
             //track height in pixels
             const trackHeight= 125;
             //total offset to subtract from
             const totalOffset = navbarHeight + trackHeight;
             setVerticalHeight(e.pageY - totalOffset);
-
         }
     }
 
@@ -119,12 +159,16 @@ export default function Room() {
 
 
     function onChangeLanguage(e) {
+        if(e.target.value === language) return;
         setLanguage(e.target.value);
+        languagePubSub.publish(e.target.value,null,null);
+
     }
 
     function handleSwitch(viewerid) {
         setMainViewerId(viewerid);
     }
+
 
     return (
         <>
@@ -169,7 +213,7 @@ export default function Room() {
                                             title="Reset Code"
                                         >
                                             <IconButton
-                                                onClick={()=> editorRef.current.setValue(lconfig.defaultValue)}
+                                                onClick={onEditorReset}
                                             >
                                                 <ReplayRoundedIcon/>
                                             </IconButton>
@@ -201,8 +245,10 @@ export default function Room() {
                                 theme="vs-dark"
                                 width={'100%'}
                                 path={lconfig.path}
+                                value={editorValue}
                                 defaultLanguage={lconfig.language}
                                 defaultValue={lconfig.defaultValue}
+                                onChange={onEditorChanged}
                                 options={{
                                     fontSize: `${editorSettings.fontSize}px`,
                                     tabSize: editorSettings.tabSize,
@@ -227,7 +273,7 @@ export default function Room() {
                 <div className="devroom-right-col">
                     <div 
                         className="devroom-cam-container"
-                        style={{height: `${verticalHeight}px`, background:'pink'}}
+                        style={{height: `${verticalHeight}px` }}
                     >
                         {
                             joined && participants && (
@@ -244,6 +290,7 @@ export default function Room() {
                         participants={participants}
                         joined={joined}
                         onClick={handleSwitch}
+                        activeSpeaker={mainViewerId}
                     />
                     <div className="resize-horizontal"onMouseDown={onVerticalMouseDown}></div>
                     <div 
@@ -270,7 +317,7 @@ export default function Room() {
                                     if(selectedTab === 'terminal') {
                                         return (
                                             <Terminal
-                                                textContent={'Terminal....'}
+                                                textContent={terminalContent}
                                             />
                                         );
                                     } else if(selectedTab === 'chat') {

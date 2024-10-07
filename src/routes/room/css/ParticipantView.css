@@ -1,9 +1,7 @@
 .pv-container {
     position: relative;
-    background-color: green;
     border-radius: 10px;
     overflow: hidden;
-    /* display: inline-block; */
   }
   
 
