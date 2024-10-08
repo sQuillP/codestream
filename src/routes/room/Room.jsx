@@ -6,9 +6,6 @@ import {Stack, IconButton, Tooltip, Button} from '@mui/material';
 
 
 //components
-import HorizontalTab from "./components/HorizontalTab";
-import Terminal from "./components/Terminal";
-import Chat from "./components/Chat";
 import SettingsDialog from "./components/SettingsDialog";
 
 //config
@@ -25,6 +22,7 @@ import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import Navbar from "./components/Navbar";
 import ParticipantView from "./components/ParticipantView";
 import VideoTrack from "./components/VideoTrack";
+import TabScreen from "./components/TabsScreen";
 
 
 
@@ -74,11 +72,6 @@ export default function Room() {
     }
 
 
-    //Either terminal or chat
-    const [selectedTab, setSelectedTab] = useState("terminal");
-
-    const [terminalContent, setTerminalContent] = useState('Output will appear in this terminal.');
-
 
     //videoSDK stream state
     const [joined, setJoined] = useState(false);
@@ -102,8 +95,6 @@ export default function Room() {
             setMainViewerId(speakerId);
         }
     });
-
-    console.log(participants)
 
 
 
@@ -293,42 +284,7 @@ export default function Room() {
                         activeSpeaker={mainViewerId}
                     />
                     <div className="resize-horizontal"onMouseDown={onVerticalMouseDown}></div>
-                    <div 
-                        className="tab-section"
-                    >
-                        <Stack
-                            direction={'row'}
-                            width={"100%"}
-                            style={{background:'var(--bg-1)'}}
-                        >
-                            <HorizontalTab
-                                title={"Terminal"}
-                                onClick={()=> setSelectedTab('terminal')}
-                                active={selectedTab==='terminal'}
-                            />
-                            <HorizontalTab
-                                title={"Chat"}
-                                active={selectedTab === 'chat'}
-                                onClick={()=> setSelectedTab('chat')}
-                            />
-                        </Stack>
-                            {
-                                (()=> {
-                                    if(selectedTab === 'terminal') {
-                                        return (
-                                            <Terminal
-                                                textContent={terminalContent}
-                                            />
-                                        );
-                                    } else if(selectedTab === 'chat') {
-                                        return (
-                                            <Chat/>
-                                        )
-                                    }
-                                })()
-                            }
-
-                    </div>
+                    <TabScreen/>
                 </div>
             </div>
         </>

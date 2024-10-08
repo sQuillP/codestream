@@ -23,14 +23,18 @@ import { useMeeting } from "@videosdk.live/react-sdk";
 
 function Navbar() {
 
-    const {leave, toggleMic, toggleWebcam, localMicOn, localWebcamOn } = useMeeting();
+    const {
+        leave, 
+        toggleMic, 
+        toggleWebcam, 
+        localMicOn, 
+        localWebcamOn, 
+        meetingId 
+    } = useMeeting();
 
-
-    console.log('local mic on::',localMicOn);
 
 
     const [copyMessage, setCopyMessage] = useState("Copy room ID");
-    const meetingId = "abc-123"
 
     const [enableVideo, setEnableVideo] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);

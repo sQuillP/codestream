@@ -15,15 +15,16 @@ function ChatItem({
             style={{
                 width:'100%',
                 display:'flex',
-                justifyContent: message.senderName === 'me' ? 'flex-end':'flex-start',
-                boxSizing:'border-box'
+                justifyContent: message.senderId === myId ? 'flex-end':'flex-start',
+                boxSizing:'border-box',
+                padding:'5px 0'
             }}
         >
             {
                 (()=> {
-                    if(message.senderName !== 'me') {
+                    if(message.senderId !== myId) {
                         return (
-                            <div className="ci-chat-item" style={{display:'inline-block', }}>
+                            <div className="ci-chat-item" style={{ display:'flex',flexDirection:'column',alignItems:'flex-start' }}>
                                 <Typography color="white" fontFamily={'inherit'} variant='subtitle2'>
                                     {message.senderName}
                                 </Typography>
@@ -35,11 +36,11 @@ function ChatItem({
                     }
                     else {
                         return (
-                            <div className="ci-chat-item" style={{display:'inline-block' }}>
+                            <div className="ci-chat-item" style={{display:'flex', alignItems:'flex-end', flexDirection:'column'}}>
                                 <Typography color="white" textAlign={'right'} fontFamily={'inherit'} variant='subtitle2'>
                                     You
                                 </Typography>
-                                <div className="chat-box" style={{marginLeft: 'auto'}}>
+                                <div className="chat-box">
                                     <p className="text ci-message">{message.message}</p>
                                 </div>
                             </div>
