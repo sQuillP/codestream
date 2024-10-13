@@ -5,7 +5,8 @@ import { useParticipant,  } from "@videosdk.live/react-sdk";
 import { useRef, useEffect, useMemo, useState, memo } from "react";
 import ReactPlayer from "react-player";
 
-
+import MicIcon from '@mui/icons-material/Mic';
+import MicOffIcon from '@mui/icons-material/MicOff';
 
 
 //Participant chat window.
@@ -32,7 +33,7 @@ export default memo(function ParticipantView(props) {
       if(splitName.length === 1) {
         return splitName[0].substring(0,2);
       } else {
-        return splitName[0][0] + splitName[1][0]
+        return splitName[0][0];
       }
     }
    
@@ -86,7 +87,14 @@ export default memo(function ParticipantView(props) {
           </Box>
         )}
         <div className="pv-footer">
-            <p className="text">{displayName}</p>
+            <p style={{marginLeft:'10px'}} className="text">{displayName}</p>
+            {
+              micOn  ? (
+                <MicIcon fontSize='small' sx={{color:'white', marginLeft:'5px'}}/>
+              ) : (
+                <MicOffIcon fontSize="small" sx={{color:'red', marginLeft:'5px'}}/>
+              )
+            }
         </div>
       </div>
     );

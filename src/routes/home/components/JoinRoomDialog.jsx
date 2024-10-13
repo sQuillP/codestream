@@ -1,7 +1,7 @@
 import "../css/JoinRoomDialog.css";
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { useState } from "react";
-import { createMeeting, DEV_AUTH } from "../../../http/VideoSDK";
+import { createMeeting, DEV_AUTH, getVideoSDKToken } from "../../../http/VideoSDK";
 
 const MAX_NAME_LENGTH = 25;
 
@@ -33,8 +33,9 @@ export default function JoinRoomDialog({
     async function handleSubmit() {
         let roomIdClone = roomId
         console.log('submitting form');
+        const videoSDKToken = await getVideoSDKToken();
         if(createNewMeeting === true) {
-            roomIdClone = await createMeeting({token: DEV_AUTH});
+            roomIdClone = await createMeeting({token: videoSDKToken});
             console.log(`Roomidclone::: ${roomIdClone}`)
         }
         onSubmitRoomDetails({username,roomId:roomIdClone});

@@ -16,20 +16,25 @@ import VideocamOffRoundedIcon from '@mui/icons-material/VideocamOffRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import CallEndRoundedIcon from '@mui/icons-material/CallEndRounded';
 
+import { useNavigate } from "react-router-dom";
+
 import { useState, memo } from "react";
 import { useMeeting } from "@videosdk.live/react-sdk";
+import { useLocation, useParams } from "react-router-dom";
 
 
 
-function Navbar() {
+function Navbar({
+    joined
+}) {
 
     const {
-        leave, 
         toggleMic, 
         toggleWebcam, 
         localMicOn, 
         localWebcamOn, 
-        meetingId 
+        meetingId,
+        leave,
     } = useMeeting();
 
 
@@ -38,6 +43,13 @@ function Navbar() {
 
     const [enableVideo, setEnableVideo] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
+
+    const navigate = useNavigate();
+
+    const location = useLocation();
+
+    const params = useParams();
+
 
 
     function onCopyToClipBoard() {
@@ -53,7 +65,7 @@ function Navbar() {
     }
 
     function onEndCall() {
-
+        leave();
     }
 
     /**
@@ -63,7 +75,7 @@ function Navbar() {
     return (
         <div className="navbar-container">
             <Stack height={'100%'} direction='row' alignItems={'center'} justifyContent={"space-between"}>
-                <div role="button"
+                <div onClick={()=> navigate('/')} role="button"
                 >
                     <h1 className="text room-logo">Codestreamer</h1>
                 </div>
@@ -73,7 +85,7 @@ function Navbar() {
                     alignItems={'center'}
                     gap={1}
                 >
-                    <p className="text">Meeting ID: {meetingId}</p>
+                    <p className="text">Meeting ID: {params.roomId}</p>
                     <Tooltip onMouseEnter={()=> setCopyMessage('Copy room ID')} title={copyMessage}>
                         <IconButton 
                             onClick={onCopyToClipBoard}
@@ -125,14 +137,18 @@ function Navbar() {
                             <TuneRoundedIcon/>
                         </IconButton>
                     </Tooltip>
-                    <Tooltip title={"End call"}>
-                        <IconButton
-                            sx={{background:'red', "&:hover":{'background':'darkred'}}}
-                            onClick={onEndCall}
-                            size="large">
-                            <CallEndRoundedIcon/>
-                        </IconButton>
-                    </Tooltip>
+                    {
+                        joined && (
+                            <Tooltip title={"End call"}>
+                                <IconButton
+                                    sx={{background:'red', "&:hover":{'background':'darkred'}}}
+                                    onClick={onEndCall}
+                                    size="large">
+                                    <CallEndRoundedIcon/>
+                                </IconButton>
+                            </Tooltip>
+                        )
+                    }
                 </Stack>
             </Stack>
         </div>

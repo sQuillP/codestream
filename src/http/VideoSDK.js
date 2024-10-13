@@ -1,20 +1,8 @@
 import axios from 'axios';
 
-export const DEV_AUTH = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiIwNGE3MDNhNC02ODQ3LTRhNDYtOGNiZC04N2Q4MGVmMWM5ZGEiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTcyODE2NjU0NSwiZXhwIjoxNzI4NzcxMzQ1fQ.PevogHI1LqVXjuKmfeYAgKZAv8wKXjelAM2xLl3caVU';
 
 
-//custom endpoint
-export async function getVideoSDKAuthToken() {
-    const token_url = "";
-    try {
-        const tokenResponse = await axios.get(token_url);
-        const token = tokenResponse.data.data;
-        return token;
-    } catch(error) {
-        return "";
-    }
-}
-
+export const TOKEN_STORAGE_KEY = 'devstreamer-videosdk-token';
 
 export const createMeeting = async ({ token }) => {
     const res = await fetch(`https://api.videosdk.live/v2/rooms`, {
@@ -31,8 +19,18 @@ export const createMeeting = async ({ token }) => {
 };
 
 
+export async function getVideoSDKToken() {
+    const videoSDKResponse = await videoSDK.get('/videosdk');
+    if(videoSDKResponse.status !== 200) {
+        throw new Error("Unable to connect to videos tream");
+    }
+    const token = videoSDKResponse.data.data;
+    return token;
+}
+
+
 
 //axios configuration for any calls pertaining to videoSDK
 export const videoSDK = axios.create({
-    baseURL:'https://api.videosdk.live/v2',
+    baseURL:'https://b5y39ec32c.execute-api.us-east-2.amazonaws.com/PROD',
 });

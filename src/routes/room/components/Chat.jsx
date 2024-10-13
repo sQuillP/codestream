@@ -9,17 +9,17 @@ import ChatItem from "./ChatItem";
 
 
 
-
 function Chat({
     messages,
-    publish
+    publish,
+    meetingDetails
 }) {
 
     const [chatMessage, setChatMessage] = useState('');
     const [currentKey, setCurrentKey] = useState("");
     const scrollRef = useRef();
 
-    const meetingDetails = useMeeting();
+
 
     function handleSubmit() {
 
@@ -28,7 +28,7 @@ function Chat({
     function handleKeyEnter(e) {
         setCurrentKey(e.key);
         if(e.key === 'Enter' && currentKey !== 'Shift') {
-            handleSubmit();
+            onSendMessage();
             return;
         }
     }
@@ -70,7 +70,7 @@ function Chat({
                             }
                         })()
                     }
-                    <div ref={scrollRef}/>
+                    <div style={{marginTop:'20px'}} ref={scrollRef}/>
                 </div>
             </div>
             <Stack minWidth={'500px'} margin={'10px 0'} width={'100%'} gap={1} direction={'row'}>

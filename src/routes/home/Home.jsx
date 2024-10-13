@@ -23,7 +23,7 @@ export default function Home() {
 
 
     function onSubmitRoomDetails({username, roomId}) {
-        navigate("/rooms/"+roomId,{state:{username, roomId}});
+        navigate("/rooms/"+roomId,{state:{username}});
     }
 
 

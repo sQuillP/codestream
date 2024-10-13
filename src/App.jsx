@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, createContext } from 'react';
 import './index.css';
 import {
   createBrowserRouter,
@@ -35,14 +35,22 @@ const router = createBrowserRouter([
     "element":<RoomWrapper/>
   }
 ])
+ 
 
+
+// export const VideoSDKTokenContext = createContext(null);
 
 
 export default function App() {
 
 
+  // const [videoSDKToken, setVideoSDKToken] = useState(null);
+
+
 
     return (
-        <RouterProvider router={router}/>
+        // <VideoSDKTokenContext.Provider value={{videoSDKToken, setVideoSDKToken}}>
+          <RouterProvider router={router}/>
+        // </VideoSDKTokenContext.Provider>
     )
 }
