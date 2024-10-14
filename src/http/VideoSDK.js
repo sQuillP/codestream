@@ -25,6 +25,7 @@ export async function getVideoSDKToken() {
         throw new Error("Unable to connect to videos tream");
     }
     const token = videoSDKResponse.data.data;
+    console.log('got videosdktoken:::',token);
     return token;
 }
 

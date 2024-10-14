@@ -13,6 +13,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@videosdk.live/react-sdk": "^0.1.101",
     "axios": "^1.7.7",
+    "buffer": "^6.0.3",
     "install": "^0.13.0",
     "npm": "^10.8.3",
     "react": "^18.3.1",

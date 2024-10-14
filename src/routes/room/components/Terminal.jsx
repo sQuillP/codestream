@@ -7,9 +7,19 @@ function Terminal({
 }) {
 
     console.log('reloading terminal');
+    const formattedContent = textContent.split("\n");
+
     return (
         <div className="terminal-container">
-            <p className="courier text">{textContent}</p>
+            {
+                formattedContent.map((content, i) => {
+                    return (
+                        <p key={`${content},i`} className="courier text">
+                            {content}
+                        </p>
+                    )
+                })
+            }
         </div>
     )
 }

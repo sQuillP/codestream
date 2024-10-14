@@ -5,6 +5,7 @@ import Editor from '@monaco-editor/react';
 import {Stack, IconButton, Tooltip, Button, Snackbar, Alert} from '@mui/material';
 
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
+import { Buffer } from "buffer";
 
 //api
 import { judge0, Judge0_languages } from "../../http/Judge0";
@@ -30,7 +31,6 @@ import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded';
 import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
 
 
-
 const SUBMITTING = 'submitting';
 const NOT_SUBMITTING = 'not-submitting';
 
@@ -51,7 +51,7 @@ export default function Room() {
     const [errorSnackbar, setErrorSnackbar] = useState(false);
     const [joiningRoom, setJoiningRoom] = useState(false);
 
-    //Editor state
+    //Editor state 
     const [language, setLanguage] = useState("python");
     const [editorSettings, setEditorSettings] = useState({
         fontSize: '16px',
@@ -63,7 +63,8 @@ export default function Room() {
     const [editorValue, setEditorValue] = useState(lconfig.defaultValue);
     const [syncedEditor, setSyncedEditor] = useState(false);
 
-    const [submittingStatus, setSubmittingStatus] = useState(NOT_SUBMITTING);
+    const [submittingStatusPubSub, setSubmittingStatusPubSub] = useState(NOT_SUBMITTING);
+    const [submittingCode, setSubmittingCode] = useState(false);
     const [terminalContent, setTerminalContent] = useState("Output will appear here.");
 
     function onEditorChanged(editorState) {
@@ -130,7 +131,7 @@ export default function Room() {
 
     const submissionPubSub = usePubSub(SUBMITTING_STATUS, {
         onMessageReceived: (message)=> {
-            setSubmittingStatus(message.message);
+            setSubmittingStatusPubSub(message.message);
         }
     });
 
@@ -192,34 +193,58 @@ export default function Room() {
         // setMainViewerId(viewerid);
     }
 
-
     function joinRoom() {
-        setJoiningRoom(true);
+        // setJoiningRoom(true);
         join();
-        setTimeout(()=> {
-            if(joined === false) {
-                setErrorSnackbar(true);
-            }
-            setJoiningRoom(false);
-        },5000);   
+        // setTimeout(()=> {
+        //     if(joined === false) {
+        //         console.log('settimeout joined', joined);
+        //         setErrorSnackbar(true);
+        //     }
+        //     setJoiningRoom(false);
+        // },5000);   
+        // setJoiningRoom(false);
     }
 
+
+    useEffect(()=>  {
+        if(submittingCode === true) {
+            submissionPubSub.publish(SUBMITTING);
+        } else {
+            submissionPubSub.publish(NOT_SUBMITTING);
+        }
+    },[submittingCode]);
+
+
+    useEffect(()=> {
+        submissionResultPubSub.publish(terminalContent,null,null,null);
+    },[terminalContent]);
+
+
+    // submissionPubSub.publish(SUBMITTING,null, null,null);
+    // submissionPubSub.publish(NOT_SUBMITTING,null,null,null);
     async function onSubmitCode() {
         try {
-            submissionPubSub.publish(SUBMITTING,null, null,null);
             const source_codeb64 = Buffer.from(editorValue).toString('base64');
-            const judge0_response = await judge0.post('/submissions',{ 
+            console.log('submitted body', { 
+                source_code:source_codeb64,
+                stdin: null,//might change this later
+                language_id: Judge0_languages[lconfig.language]
+            })
+            const judge0_response = await judge0.post('/judge0',{ 
                 source_code:source_codeb64,
                 stdin: null,//might change this later
                 language_id: Judge0_languages[lconfig.language]
             });
-            const judge0_data = judge0_response.data.data.stdout;
-            const decodedBase64 = Buffer.from(judge0_data,'base64').toString('ascii');
-            submissionResultPubSub.publish(decodedBase64,null,null,null);
+            console.log('raw judge0 response', judge0_response.data)
+            const {stderr, stdout, compile_output} = judge0_response.data.data;
+
+            const judge0_output = stdout || stderr || compile_output;
+            const decodedBase64 = Buffer.from(judge0_output,'base64').toString('ascii');
+            setTerminalContent(decodedBase64);
         } catch(error) {
-            console.log("Error submitting code");
+            console.log("Error submitting code", error);
         } finally {
-            submissionPubSub.publish(NOT_SUBMITTING,null,null,null);
         }
 
     }
@@ -293,16 +318,18 @@ export default function Room() {
                                         <Tooltip
                                             title="Execute"
                                         >
-                                            <Button
-                                                endIcon={<DirectionsRunRoundedIcon/>}
-                                                sx={{textTransform:'none',}}
-                                                variant="contained"
-                                                color="success"
-                                                disabled={joined === false || SUBMITTING}
-                                                onClick={onSubmitCode}
-                                            >
-                                                Run Code
-                                            </Button>
+                                            <div>
+                                                <Button
+                                                    endIcon={<DirectionsRunRoundedIcon/>}
+                                                    sx={{textTransform:'none',}}
+                                                    variant="contained"
+                                                    color="success"
+                                                    disabled={joined === false || submittingStatusPubSub === SUBMITTING}
+                                                    onClick={onSubmitCode}
+                                                >
+                                                    Run Code
+                                                </Button>
+                                            </div>
                                         </Tooltip>
                                         {/* <Button
                                                 onClick={join}
