@@ -8,7 +8,7 @@ export const JUDGE0_TOKEN_KEY = "judge0-token-key";
 export const Judge0_languages = Object.freeze({
     "c": 50,
     "cpp": 54,
-    "cs":51,
+    "csharp":51,
     "java":62,
     "javascript":63,
     "python":71,

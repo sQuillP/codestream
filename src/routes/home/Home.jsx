@@ -1,17 +1,22 @@
 import "./css/Home.css";
 import { useNavigate } from "react-router-dom";
-import MeetingRoomIcon from '@mui/icons-material/MeetingRoomRounded';
-import AddCircle from '@mui/icons-material/AddCircleOutlineRounded';
+
 import JoinRoomDialog from "./components/JoinRoomDialog";
 import { useState } from "react";
 
+//icons
+import MeetingRoomIcon from '@mui/icons-material/MeetingRoomRounded';
+import AddCircle from '@mui/icons-material/AddCircleOutlineRounded';
+
+//component
+import CodeStreak from "./components/CodeStreak";
 
 
 export default function Home() {
 
     const [openJoinRoomDialog, setOpenJoinRoomDialog] = useState(false);
     const navigate = useNavigate();
-    const bubbles = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    const bubbles = new Array(30).fill(0)
 
     const[createNewMeeting, setCreateNewMeeting] = useState(false);
 
@@ -41,7 +46,7 @@ export default function Home() {
             <div className="bubbles">
                 {
                     bubbles.map((_,i)=> {
-                        return <span key={i} style={{"--i":+String(Math.floor(Math.random()*29)+ 2)}}></span>
+                        return <CodeStreak key={`${i}`}/>
                     })
                 }
             </div>

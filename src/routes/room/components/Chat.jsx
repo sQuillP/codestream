@@ -29,7 +29,6 @@ function Chat({
         setCurrentKey(e.key);
         if(e.key === 'Enter' && currentKey !== 'Shift') {
             onSendMessage();
-            return;
         }
     }
 
@@ -38,6 +37,7 @@ function Chat({
         publish(chatMessage,{persist: true}, null);
         setChatMessage("");
     }
+
 
     useEffect(()=> {
         scrollRef.current?.scrollIntoView();

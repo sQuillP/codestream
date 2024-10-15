@@ -2,7 +2,7 @@ import "./css/Room.css";
 import { useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Editor from '@monaco-editor/react';
-import {Stack, IconButton, Tooltip, Button, Snackbar, Alert} from '@mui/material';
+import {Stack, IconButton, Tooltip, Button, Snackbar, Alert, CircularProgress, useMediaQuery} from '@mui/material';
 
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { Buffer } from "buffer";
@@ -39,7 +39,6 @@ export default function Room() {
     const {state} = useLocation();
     const editorRef = useRef();
 
-
     //UI state for dragging windows
     const [horizontalWidth, setHorizontalWidth] = useState(600);
     const [horizontalMouseDown, setHorizontalMouseDown] = useState(false);
@@ -63,7 +62,6 @@ export default function Room() {
     const [editorValue, setEditorValue] = useState(lconfig.defaultValue);
     const [syncedEditor, setSyncedEditor] = useState(false);
 
-    const [submittingStatusPubSub, setSubmittingStatusPubSub] = useState(NOT_SUBMITTING);
     const [submittingCode, setSubmittingCode] = useState(false);
     const [terminalContent, setTerminalContent] = useState("Output will appear here.");
 
@@ -73,13 +71,14 @@ export default function Room() {
         }
         // for extra details{editorContent: editorState}
         setEditorValue(editorState);
-        publish(editorState ,null,null);
+        publish(editorState ,null,{language});
 
     }
 
     function onEditorReset() {
         // editorRef.current.setValue(lconfig.defaultValue)
-        // publish(editorRef.current.getValue(), null, null);
+        setEditorValue(lconfig.defaultValue)
+        publish(lconfig.defaultValue, null, null);
     }
 
 
@@ -111,6 +110,11 @@ export default function Room() {
         onSpeakerChanged: (speakerId) => {
             if(!speakerId) return;
             setMainViewerId(speakerId);
+        },
+        onParticipantLeft:(participant) => {
+            if(joined === true) {
+                setMainViewerId(participants.keys().next().value);
+            }
         }
     });
 
@@ -118,6 +122,9 @@ export default function Room() {
 
     const { publish } = usePubSub(EDITOR, {
         onMessageReceived: (message)=> {
+            if(message.payload.language !== language) {
+                setLanguage(message.payload.language);
+            }
             setEditorValue(message.message);
         }
     });
@@ -131,7 +138,11 @@ export default function Room() {
 
     const submissionPubSub = usePubSub(SUBMITTING_STATUS, {
         onMessageReceived: (message)=> {
-            setSubmittingStatusPubSub(message.message);
+            if(message.message === SUBMITTING) {
+                setSubmittingCode(true);
+            } else {
+                setSubmittingCode(false);
+            }
         }
     });
 
@@ -185,8 +196,8 @@ export default function Room() {
     function onChangeLanguage(e) {
         if(e.target.value === language) return;
         setLanguage(e.target.value);
+        setEditorValue(languages[e.target.value].defaultValue);
         languagePubSub.publish(e.target.value,null,null);
-
     }
 
     function handleSwitch(viewerid) {
@@ -207,44 +218,42 @@ export default function Room() {
     }
 
 
-    useEffect(()=>  {
-        if(submittingCode === true) {
-            submissionPubSub.publish(SUBMITTING);
-        } else {
-            submissionPubSub.publish(NOT_SUBMITTING);
-        }
-    },[submittingCode]);
-
-
     useEffect(()=> {
-        submissionResultPubSub.publish(terminalContent,null,null,null);
+        submissionResultPubSub.publish(terminalContent,null,null);
     },[terminalContent]);
 
 
-    // submissionPubSub.publish(SUBMITTING,null, null,null);
-    // submissionPubSub.publish(NOT_SUBMITTING,null,null,null);
     async function onSubmitCode() {
         try {
-            const source_codeb64 = Buffer.from(editorValue).toString('base64');
-            console.log('submitted body', { 
-                source_code:source_codeb64,
-                stdin: null,//might change this later
-                language_id: Judge0_languages[lconfig.language]
-            })
-            const judge0_response = await judge0.post('/judge0',{ 
-                source_code:source_codeb64,
-                stdin: null,//might change this later
-                language_id: Judge0_languages[lconfig.language]
-            });
-            console.log('raw judge0 response', judge0_response.data)
-            const {stderr, stdout, compile_output} = judge0_response.data.data;
+            setSubmittingCode(true);
+            submissionPubSub.publish(SUBMITTING, null, null);
+            // const source_codeb64 = Buffer.from(editorValue).toString('base64');
+            // console.log('submitted body', { 
+            //     source_code:source_codeb64,
+            //     stdin: null,//might change this later
+            //     language_id: Judge0_languages[lconfig.language]
+            // })
+            // const judge0_response = await judge0.post('/judge0',{ 
+            //     source_code:source_codeb64,
+            //     stdin: null,//might change this later
+            //     language_id: Judge0_languages[lconfig.language]
+            // });
+            // console.log('raw judge0 response', judge0_response.data)
+            // const {stderr, stdout, compile_output} = judge0_response.data.data;
 
-            const judge0_output = stdout || stderr || compile_output;
-            const decodedBase64 = Buffer.from(judge0_output,'base64').toString('ascii');
-            setTerminalContent(decodedBase64);
+            // const judge0_output = stdout || compile_output;
+            // const judge0_stderr = Buffer.from((stderr || ""), 'base64').toString("ascii");
+            // const decodedBase64 = Buffer.from((judge0_output||""),'base64').toString('ascii') + '\n'+judge0_stderr;
+            // setTerminalContent(decodedBase64);
+
+            setTimeout(()=> {
+                setSubmittingCode(false);
+                submissionPubSub.publish(NOT_SUBMITTING, null, null);
+            },3000);
         } catch(error) {
             console.log("Error submitting code", error);
         } finally {
+            // setSubmittingCode(false);
         }
 
     }
@@ -316,18 +325,19 @@ export default function Room() {
                                             </IconButton>
                                         </Tooltip>
                                         <Tooltip
-                                            title="Execute"
+                                            title={submittingCode ? "Running": "Execute"}
                                         >
                                             <div>
                                                 <Button
-                                                    endIcon={<DirectionsRunRoundedIcon/>}
+                                                    endIcon={submittingCode === false ? <DirectionsRunRoundedIcon/>: <></>}
                                                     sx={{textTransform:'none',}}
                                                     variant="contained"
                                                     color="success"
-                                                    disabled={joined === false || submittingStatusPubSub === SUBMITTING}
+                                                    disabled={joined === false || submittingCode}
                                                     onClick={onSubmitCode}
+                                                    
                                                 >
-                                                    Run Code
+                                                    {submittingCode ? <CircularProgress size={'1rem'}/> : "Run Code"}
                                                 </Button>
                                             </div>
                                         </Tooltip>
@@ -353,7 +363,8 @@ export default function Room() {
                                 options={{
                                     fontSize: `${editorSettings.fontSize}px`,
                                     tabSize: editorSettings.tabSize,
-                                    detectIndentation: true
+                                    detectIndentation: true,
+                                    // automaticLayout:false
                                 }}
                             />
                             </div>
@@ -377,11 +388,11 @@ export default function Room() {
                         style={{height: `${verticalHeight}px` }}
                     >
                         {
-                            joined && participants ? (
+                            joined === true && participants.size !== 0 ? (
                                 <ParticipantView
                                     height={'100%'}
                                     width={'100%'}
-                                    participantId={!mainViewerId ? [...participants.keys()][0] : mainViewerId}
+                                    participantId={mainViewerId || participants.keys().next().value}
                                     onClick={()=> null}
                                 />
                             ) : (

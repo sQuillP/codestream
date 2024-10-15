@@ -14,7 +14,7 @@ function Terminal({
             {
                 formattedContent.map((content, i) => {
                     return (
-                        <p key={`${content},i`} className="courier text">
+                        <p key={`${content},${i}`} className="courier text">
                             {content}
                         </p>
                     )

@@ -83,17 +83,26 @@
     background: #4fc3dc;
     margin: 0 4px;;
     border-radius: 50%;
-    box-shadow: 0 0 0 10px #4fc3dc44,
+    /* box-shadow: 0 0 0 10px #4fc3dc44,
     0 0 20px #4fc3dc,
-    0 0 30px #4fc4dc;
+    0 0 30px #4fc4dc; */
+
+    /* box-shadow: 0 0 0 10px white,
+    0 0 50px rgba(255,255,255,0.7),
+    0 0 100px rgba(255,255,255, 0.5); */
+
     animation: bubbles 15s linear infinite;
     animation-duration: calc(180s/var(--i));
 }
 
 .bubbles span:nth-child(even) {
-    box-shadow: 0 0 0 10px #ff2d75,
+    /* box-shadow: 0 0 0 10px #ff2d75,
     0 0 50px #ff2d75,
-    0 0 100px #ff2d75;
+    0 0 100px #ff2d75; */
+
+    /* box-shadow: 0 0 0 10px white,
+    0 0 50px rgba(255,255,255,0.7),
+    0 0 100px rgba(255,255,255, 0.5) */
 
 }
 

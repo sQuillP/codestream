@@ -28,12 +28,14 @@ int main(){
         language:'csharp',
         fontSize:'16px',
         path:'program.cs',
-        defaultValue:`using System;\n
+        defaultValue:`
+using System;
+
 public class Program
 {
-    public static void Main(string[] args) 
+    public static void Main(string[] args)
     {
-        Console.WriteLine("Hello from C#");
+        Console.WriteLine ("Hello from C#!");
     }
 }`
     },
@@ -72,9 +74,7 @@ console.log("Hello JavaScript!");`
         fontSize:'16px',
         path:'program.c',
         defaultValue:`
-#include <iostream>
-using namespace std;
-
+#include <stdio.h>
 
 int main(){
     //Your code here
