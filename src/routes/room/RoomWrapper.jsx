@@ -31,15 +31,22 @@ export default function RoomWrapper() {
     // const {videoSDKToken, setVideoSDKToken} = useContext(VideoSDKTokenContext);
     const [videoSDKToken, setVideoSDKToken] = useState(null);
 
+    const [fetchingToken, setFetchingToken] = useState(false);
+
+
     const [tokenError, setTokenError] = useState(false);
 
     const callAndSetVideoSDKToken = useCallback( async ()=> {
         try {
+            setFetchingToken(true);
             const token = await getVideoSDKToken();
             setVideoSDKToken(token);
         } catch(error) {
             console.error(error.message);
             setTokenError(true);
+            setVideoSDKToken(null);
+        } finally {
+            setFetchingToken(false);
         }
     },[]);
 
@@ -85,7 +92,7 @@ export default function RoomWrapper() {
 
             </Dialog>
             {
-                videoSDKToken !== null && params.roomId ? (
+                fetchingToken === false && videoSDKToken !== null && params.roomId ? (
                     <MeetingProvider
                         config={{
                             meetingId: params.roomId,
@@ -95,7 +102,7 @@ export default function RoomWrapper() {
                         }}
                         token={videoSDKToken}
                     >
-                        <Room/>
+                        <Room refreshToken={callAndSetVideoSDKToken}/>
                     </MeetingProvider>
                 ): (
                     <div 
@@ -121,7 +128,7 @@ export default function RoomWrapper() {
                                 One moment please
                             </Typography>
                             <CircularProgress color="white" size='3rem'/>
-                            <Typography mt={2} fontFamily={'inherit'}>Getting things ready</Typography>
+                            <Typography mt={2} fontFamily={'inherit'}>Establishing new connection...</Typography>
                         </Box>
                     </div>
                 )

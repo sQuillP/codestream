@@ -49,7 +49,7 @@ function Chat({
                 <div className="chat-stream-text">
                     {
                         (()=> {
-                            if(messages.length !== 0) {
+                            if(messages.length !== 0 && meetingDetails.localParticipant?.id) {
                                 return (
                                     messages.map((message,i) => {
                                         return (
@@ -73,7 +73,7 @@ function Chat({
                     <div style={{marginTop:'20px'}} ref={scrollRef}/>
                 </div>
             </div>
-            <Stack minWidth={'500px'} margin={'10px 0'} width={'100%'} gap={1} direction={'row'}>
+            <Stack  margin={'10px 0'} width={'100%'} gap={1} direction={'row'}>
                 <textarea 
                     className="chat-footer"
                     value={chatMessage}

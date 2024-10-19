@@ -42,6 +42,7 @@
 
 .home-action {
     color: var(--bg-5);
+    text-align: center;
 }
 
 .home-button:hover {
@@ -80,7 +81,8 @@
     position: relative;
     height: 15px;
     width: 15px;
-    background: #4fc3dc;
+    /* background: #4fc3dc; */
+    color: white;
     margin: 0 4px;;
     border-radius: 50%;
     /* box-shadow: 0 0 0 10px #4fc3dc44,

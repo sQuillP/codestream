@@ -21,11 +21,11 @@ function TabScreen({
     const notification = new Audio("/notification.mp3");
 
 
-    function onOldMessagesReceived(oldMessages) {
-        console.log('old messages', oldMessages);
-        const updatedMessages = [...oldMessages];
-        setVideoChat(updatedMessages);
-    }
+    // function onOldMessagesReceived(oldMessages) {
+    //     console.log('old messages', oldMessages);
+    //     const updatedMessages = [...oldMessages];
+    //     setVideoChat(updatedMessages);
+    // }
 
     function onMessageReceived(message) {
         console.log('message received', message);
@@ -37,7 +37,7 @@ function TabScreen({
 
     const { publish } = usePubSub(CHAT, {
         onMessageReceived,
-        onOldMessagesReceived,
+        // onOldMessagesReceived,
     });
 
 

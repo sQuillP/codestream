@@ -35,7 +35,8 @@ import { useLocation, useParams } from "react-router-dom";
 
 
 function Navbar({
-    joined
+    joined,
+    refreshToken
 }) {
 
     const {
@@ -62,7 +63,7 @@ function Navbar({
 
 
     function onCopyToClipBoard() {
-        navigator.clipboard.writeText(meetingId)
+        navigator.clipboard.writeText(params.roomId);
         setCopyMessage("Copied!")
     }
 
@@ -75,10 +76,17 @@ function Navbar({
 
     function onEndCall() {
         leave();
+        refreshToken();
     }
 
     function onCloseSettings() {
         setOpenSettings(false);
+    }
+
+
+    function onNavigateBack() {
+        leave();
+        navigate('/');
     }
 
     /**
@@ -109,9 +117,9 @@ function Navbar({
                             <Typography fontFamily={'inherit'} variant='body1' color="white">
                                 {params.roomId}
                             </Typography>
-                            <Tooltip title='Copy'>
+                            <Tooltip title={copyMessage}>
                                 <IconButton 
-                                    onClick={()=> navigator.clipboard.writeText(params.roomId)}
+                                    onClick={onCopyToClipBoard}
                                 >
                                     <ContentCopyRoundedIcon/>
                                 </IconButton>
@@ -135,7 +143,7 @@ function Navbar({
                     {
                         smallScreen === false ? (
                         <>
-                            <div onClick={()=> navigate('/')} role="button">
+                            <div onClick={onNavigateBack} role="button">
                                 <h1 className="text room-logo">Codestreamer</h1>
                             </div>
                             <Stack 
@@ -157,7 +165,7 @@ function Navbar({
 
                         ): (
                             <Tooltip title="Home">
-                                <IconButton onClick={()=> navigate('/')}>
+                                <IconButton onClick={onNavigateBack}>
                                         <ArrowBackIcon/>
                                 </IconButton>
                             </Tooltip>

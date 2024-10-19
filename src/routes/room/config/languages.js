@@ -44,7 +44,7 @@ public class Program
         fontSize:'16px',
         path:'program.java',
         defaultValue:`
-public class Program {
+public class Main {
     public static void main(String[] args) {
         System.out.println("Hello from Java");
     }

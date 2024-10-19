@@ -8,6 +8,14 @@
     padding-left: 20px;
     padding-top: 20px;
     height: 100%;
+    position: relative;
+    overflow-y: scroll;
+}
+
+.terminal-rendered-content {
+    position: absolute;
+    height: 100%;
+    width: 100%;
 }
 
 .chat-footer {

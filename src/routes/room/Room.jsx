@@ -34,7 +34,7 @@ import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
 const SUBMITTING = 'submitting';
 const NOT_SUBMITTING = 'not-submitting';
 
-export default function Room() {
+export default function Room({refreshToken}) {
 
     const {state} = useLocation();
     const editorRef = useRef();
@@ -78,13 +78,14 @@ export default function Room() {
     function onEditorReset() {
         // editorRef.current.setValue(lconfig.defaultValue)
         setEditorValue(lconfig.defaultValue)
-        publish(lconfig.defaultValue, null, null);
+        publish(lconfig.defaultValue, null, {language});
     }
 
 
 
     //videoSDK stream state
     const [joined, setJoined] = useState(false);
+
 
     const [mainViewerId, setMainViewerId] = useState(null);
 
@@ -100,6 +101,7 @@ export default function Room() {
             setJoined(true);
         },
         onMeetingLeft:()=> {
+            setJoined(false);
         },
 
         onError:(e)=> {
@@ -111,13 +113,17 @@ export default function Room() {
             if(!speakerId) return;
             setMainViewerId(speakerId);
         },
-        onParticipantLeft:(participant) => {
-            if(joined === true) {
-                setMainViewerId(participants.keys().next().value);
-            }
-        }
+        
     });
 
+
+    function getCurrentUser() {
+        if(participants.has(mainViewerId) === false) {
+            return localParticipant.id;
+        } else {
+            return mainViewerId
+        }
+    }
 
 
     const { publish } = usePubSub(EDITOR, {
@@ -134,6 +140,7 @@ export default function Room() {
             setLanguage(message.message);
         }
     });
+
 
 
     const submissionPubSub = usePubSub(SUBMITTING_STATUS, {
@@ -205,16 +212,7 @@ export default function Room() {
     }
 
     function joinRoom() {
-        // setJoiningRoom(true);
         join();
-        // setTimeout(()=> {
-        //     if(joined === false) {
-        //         console.log('settimeout joined', joined);
-        //         setErrorSnackbar(true);
-        //     }
-        //     setJoiningRoom(false);
-        // },5000);   
-        // setJoiningRoom(false);
     }
 
 
@@ -225,47 +223,42 @@ export default function Room() {
 
     async function onSubmitCode() {
         try {
-            setSubmittingCode(true);
+            // setSubmittingCode(true);
             submissionPubSub.publish(SUBMITTING, null, null);
-            // const source_codeb64 = Buffer.from(editorValue).toString('base64');
-            // console.log('submitted body', { 
-            //     source_code:source_codeb64,
-            //     stdin: null,//might change this later
-            //     language_id: Judge0_languages[lconfig.language]
-            // })
-            // const judge0_response = await judge0.post('/judge0',{ 
-            //     source_code:source_codeb64,
-            //     stdin: null,//might change this later
-            //     language_id: Judge0_languages[lconfig.language]
-            // });
-            // console.log('raw judge0 response', judge0_response.data)
-            // const {stderr, stdout, compile_output} = judge0_response.data.data;
+            const source_codeb64 = Buffer.from(editorValue).toString('base64');
+            console.log('submitted body', { 
+                source_code:source_codeb64,
+                stdin: null,//might change this later
+                language_id: Judge0_languages[lconfig.language]
+            })
+            const judge0_response = await judge0.post('/judge0',{ 
+                source_code:source_codeb64,
+                stdin: null,//might change this later
+                language_id: Judge0_languages[lconfig.language]
+            });
+            console.log('raw judge0 response', judge0_response.data)
+            const {stderr, stdout, compile_output} = judge0_response.data.data;
 
-            // const judge0_output = stdout || compile_output;
-            // const judge0_stderr = Buffer.from((stderr || ""), 'base64').toString("ascii");
-            // const decodedBase64 = Buffer.from((judge0_output||""),'base64').toString('ascii') + '\n'+judge0_stderr;
-            // setTerminalContent(decodedBase64);
+            const judge0_output = stdout || compile_output;
+            const judge0_stderr = Buffer.from((stderr || ""), 'base64').toString("ascii");
+            const decodedBase64 = Buffer.from((judge0_output||""),'base64').toString('ascii') + '\n'+judge0_stderr;
+            setTerminalContent(decodedBase64);
 
-            setTimeout(()=> {
-                setSubmittingCode(false);
-                submissionPubSub.publish(NOT_SUBMITTING, null, null);
-            },3000);
+            // setTimeout(()=> {
+            //     setSubmittingCode(false);
+            //     submissionPubSub.publish(NOT_SUBMITTING, null, null);
+            // },3000);
         } catch(error) {
             console.log("Error submitting code", error);
         } finally {
-            // setSubmittingCode(false);
+            setSubmittingCode(false);
+            submissionPubSub.publish(NOT_SUBMITTING,null,null);
         }
 
     }
 
 
-    /**
-     * TODO: MAKE SURE YOU ARE GETTING THE SUBMISSION RESULTS CORRECTLY
-     * USING THE PUB-SUB. THIS MIGHT HAVE TO BE DONE ON THE ROOM.JSX FILE
-     * INSTEAD OF THE TABSSCREEN SINCE THE SUBMISSION BUTTON DOESN'T
-     * HAVE ANY RELATION TO THE TABS.
-     */
-
+    console.log("in room:::participants", participants);
 
     return (
         <>
@@ -284,7 +277,7 @@ export default function Room() {
                 onClose={()=> setOpenSettingsDialog(false)}
                 updateSettings={(settings)=> setEditorSettings(settings)}    
             />
-            <Navbar joined={joined}/>
+            <Navbar refreshToken={refreshToken} joined={joined}/>
             <div 
                 className="devroom-container"
                 onMouseUp={onMouseUp}
@@ -341,13 +334,7 @@ export default function Room() {
                                                 </Button>
                                             </div>
                                         </Tooltip>
-                                        {/* <Button
-                                                onClick={join}
-                                            >
-                                                debug
-                                            </Button> */}
                                     </Stack>
-                                    
                                 </Stack>
                             </div>
                             <Editor
@@ -388,11 +375,11 @@ export default function Room() {
                         style={{height: `${verticalHeight}px` }}
                     >
                         {
-                            joined === true && participants.size !== 0 ? (
+                            joined === true && participants ? (
                                 <ParticipantView
                                     height={'100%'}
                                     width={'100%'}
-                                    participantId={mainViewerId || participants.keys().next().value}
+                                    participantId={localParticipant.id}
                                     onClick={()=> null}
                                 />
                             ) : (

@@ -10,7 +10,7 @@ function  VideoTrack({
     onClick,
     activeSpeaker
 }) {
-    
+    console.log('in video track participants', participants)
     return (
         <div className="video-gallerybox">
             <div className="video-gallery">
