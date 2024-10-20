@@ -3,7 +3,6 @@ import {
     IconButton, 
     Tooltip,
     Stack,
-    Box,
     useMediaQuery,
     Dialog,
     DialogTitle,
@@ -22,7 +21,6 @@ import VideocamRoundedIcon from '@mui/icons-material/VideocamRounded';
 import VideocamOffRoundedIcon from '@mui/icons-material/VideocamOffRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import CallEndRoundedIcon from '@mui/icons-material/CallEndRounded';
-import GroupsIcon from '@mui/icons-material/Groups';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 
@@ -48,7 +46,7 @@ function Navbar({
         leave,
     } = useMeeting();
 
-    const smallScreen = useMediaQuery("(max-width: 760px)");
+    const smallScreen = useMediaQuery("(max-width: 810px)");
     const [copyMessage, setCopyMessage] = useState("Copy room ID");
     const [enableVideo, setEnableVideo] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
@@ -56,7 +54,6 @@ function Navbar({
 
     const navigate = useNavigate();
 
-    const location = useLocation();
 
     const params = useParams();
 
@@ -70,9 +67,6 @@ function Navbar({
 
 
 
-    function onToggleVideo() {
-        setEnableVideo(enableVideo => !enableVideo)
-    }
 
     function onEndCall() {
         leave();

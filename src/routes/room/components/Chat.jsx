@@ -1,8 +1,7 @@
-import { IconButton, Stack, Button } from "@mui/material";
+import { Stack, Button } from "@mui/material";
 import "../css/Chat.css";
 import { memo, useEffect, useRef, useState } from "react";
 import SendIcon from '@mui/icons-material/Send';
-import { useMeeting } from "@videosdk.live/react-sdk";
 
 
 import ChatItem from "./ChatItem";
@@ -21,9 +20,6 @@ function Chat({
 
 
 
-    function handleSubmit() {
-
-    }
  
     function handleKeyEnter(e) {
         setCurrentKey(e.key);

@@ -21,6 +21,7 @@ using namespace std;
         
 int main(){
     //Your code here
+    cout<<"Hello from C++"<<endl;
     return 0;
 }`
     },
@@ -78,6 +79,7 @@ console.log("Hello JavaScript!");`
 
 int main(){
     //Your code here
+    printf("Hello C!");
     return 0;
 }`
     }

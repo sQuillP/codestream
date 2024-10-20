@@ -52,7 +52,7 @@ export default function Home() {
             </div> */}
             <div className="home-content">
                 <h1 className="text home-header">Codestreamer Does it All</h1>
-                <p className="home-action text">Providing powerful tools like live chat,code editing and submissions, and so much more!</p>
+                <p className="home-action text">Bringing powerful tools like live chat,code editing and submissions!</p>
                 <div className="button-container">
                     <button
                         className="home-button"
