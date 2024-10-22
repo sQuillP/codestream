@@ -45,6 +45,7 @@ function TabScreen({
     return (
         <div 
             className="tab-section"
+            style={{overflowX:'hidden'}}
         >
             <Stack
                 direction={'row'}

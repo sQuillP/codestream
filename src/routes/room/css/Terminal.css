@@ -4,9 +4,7 @@
     height: 100%;
     width: 100%;
     background: var(--bg-1);
-    box-sizing: border-box;
-    padding-left: 20px;
-    padding-top: 20px;
+    /* box-sizing: border-box; */
     height: 100%;
     position: relative;
     overflow-y: scroll;
@@ -14,8 +12,14 @@
 
 .terminal-rendered-content {
     position: absolute;
+    top: 0px;
+    left: 0px;
     height: 100%;
     width: 100%;
+    padding-left: 15px;
+    padding-top: 15px;
+    box-sizing: border-box;
+
 }
 
 .chat-footer {
