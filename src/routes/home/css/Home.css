@@ -35,7 +35,7 @@
     font-weight: 400;
 }
 
-.home-button:last-child{
+.home-button{
     margin-top: 20px;;
 }
 
@@ -116,5 +116,11 @@
 
     100% {
         transform: translateY(100vh) scale(1);
+    }
+}
+
+@media screen and (max-width: 700px) {
+    .home-header {
+        font-size: 3rem;
     }
 }

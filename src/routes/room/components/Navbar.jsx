@@ -13,6 +13,8 @@ import {
 } from "@mui/material"
 
 
+import FileShareDialog from "./FileShareDialog";
+
 //some icons
 import ContentCopyRoundedIcon from '@mui/icons-material/ContentCopyRounded';
 import MicRoundedIcon from '@mui/icons-material/MicRounded';
@@ -22,19 +24,21 @@ import VideocamOffRoundedIcon from '@mui/icons-material/VideocamOffRounded';
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded';
 import CallEndRoundedIcon from '@mui/icons-material/CallEndRounded';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 
 
 import { useNavigate } from "react-router-dom";
 
 import { useState, memo } from "react";
-import { useMeeting } from "@videosdk.live/react-sdk";
+import { useMeeting, usePubSub, useFile } from "@videosdk.live/react-sdk";
 import { useLocation, useParams } from "react-router-dom";
 
-
+import { FILESHARE_PUBSUB } from "../../../http/Channels";
 
 function Navbar({
     joined,
-    refreshToken
+    refreshToken,
+    videoSDKToken
 }) {
 
     const {
@@ -50,13 +54,14 @@ function Navbar({
     const [copyMessage, setCopyMessage] = useState("Copy room ID");
     const [enableVideo, setEnableVideo] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
+    const [openFileShareDialog, setOpenFileShareDialog] = useState(false);
     
 
+    const [fileURLs, setFileURLs] = useState([]);
+    const { uploadBase64File, fetchBase64File } = useFile();
+
     const navigate = useNavigate();
-
-
     const params = useParams();
-
 
 
     function onCopyToClipBoard() {
@@ -65,7 +70,40 @@ function Navbar({
     }
 
 
+    const fileSharePubSub = usePubSub(FILESHARE_PUBSUB, {
+        onMessageReceived: (message)=> {
+            setFileURLs([...fileURLs, message.message]);
+        },
+        onOldMessagesReceived: (messages)=> {
+            const transformedMessages = messages.map(m => m.message);
+            setFileURLs(transformedMessages);
+        }
+    });
 
+
+    async function onSendFile() {
+        try {
+            const base64Data = "base64data";
+            const fileName = 'filename';
+
+            const fileURL = await uploadBase64File({base64Data, token: videoSDKToken, fileName});
+            fileSharePubSub.publish(fileURL,)
+        } catch(error) {
+
+        }
+    }
+
+
+    async function onDownloadFile() {
+        try {
+            const url = "url";
+            const b64FileContents = await fetchBase64File({url, token:videoSDKToken});
+
+
+        } catch(error) {
+
+        }
+    }
 
 
     function onEndCall() {
@@ -132,13 +170,17 @@ function Navbar({
                     </Button>
                 </DialogActions>
             </Dialog>
+            <FileShareDialog
+                open={openFileShareDialog}
+                onClose={()=> setOpenFileShareDialog(false)}
+            />
             <div className="navbar-container">
                 <Stack height={'100%'} direction='row' alignItems={'center'} justifyContent={"space-between"}>
                     {
                         smallScreen === false ? (
                         <>
                             <div onClick={onNavigateBack} role="button">
-                                <h1 className="text room-logo">Codestreamer</h1>
+                                <h1 className="text room-logo">Devstreamer</h1>
                             </div>
                             <Stack 
                             flexDirection={'row'} 
@@ -171,6 +213,14 @@ function Navbar({
                         direction={'row'}
                         gap={3}
                     >
+                        <Tooltip title="Share Files">
+                            <IconButton 
+                                onClick={()=> setOpenFileShareDialog(true)}
+                                size="large"
+                            >
+                                <FileUploadRoundedIcon/>
+                            </IconButton>
+                        </Tooltip>
                         <Tooltip
                             title={localMicOn === false ? "Unmute":"Mute"}
                         >

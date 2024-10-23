@@ -102,7 +102,7 @@ export default function RoomWrapper() {
                         }}
                         token={videoSDKToken}
                     >
-                        <Room refreshToken={callAndSetVideoSDKToken}/>
+                        <Room videoSDKToken={videoSDKToken} refreshToken={callAndSetVideoSDKToken}/>
                     </MeetingProvider>
                 ): (
                     <div 

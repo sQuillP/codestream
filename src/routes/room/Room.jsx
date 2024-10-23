@@ -34,7 +34,7 @@ import DirectionsRunRoundedIcon from '@mui/icons-material/DirectionsRunRounded';
 const SUBMITTING = 'submitting';
 const NOT_SUBMITTING = 'not-submitting';
 
-export default function Room({refreshToken}) {
+export default function Room({refreshToken, videoSDKToken}) {
 
     const {state} = useLocation();
     const editorRef = useRef();
@@ -81,14 +81,11 @@ export default function Room({refreshToken}) {
         publish(lconfig.defaultValue, null, {language});
     }
 
-
+    
 
     //videoSDK stream state
     const [joined, setJoined] = useState(false);
-
-
     const [mainViewerId, setMainViewerId] = useState(null);
-
 
     // username, roomId
     const { join, participants, localParticipant} = useMeeting({
@@ -117,13 +114,6 @@ export default function Room({refreshToken}) {
     });
 
 
-    function getCurrentUser() {
-        if(participants.has(mainViewerId) === false) {
-            return localParticipant.id;
-        } else {
-            return mainViewerId
-        }
-    }
 
 
     const { publish } = usePubSub(EDITOR, {
@@ -277,7 +267,7 @@ export default function Room({refreshToken}) {
                 onClose={()=> setOpenSettingsDialog(false)}
                 updateSettings={(settings)=> setEditorSettings(settings)}    
             />
-            <Navbar refreshToken={refreshToken} joined={joined}/>
+            <Navbar videoSDKToken={videoSDKToken} refreshToken={refreshToken} joined={joined}/>
             <div 
                 className="devroom-container"
                 onMouseUp={onMouseUp}
