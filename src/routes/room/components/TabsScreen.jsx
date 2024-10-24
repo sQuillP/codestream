@@ -1,8 +1,8 @@
 import { Stack } from "@mui/material";
-import { useState, memo } from "react";
+import { useState } from "react";
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 
-import { CHAT, SUBMISSION_RESULT } from "../../../http/Channels";
+import { CHAT } from "../../../http/Channels";
 
 import Terminal from "./Terminal";
 import HorizontalTab from "./HorizontalTab";
@@ -21,14 +21,7 @@ function TabScreen({
     const notification = new Audio("/notification.mp3");
 
 
-    // function onOldMessagesReceived(oldMessages) {
-    //     console.log('old messages', oldMessages);
-    //     const updatedMessages = [...oldMessages];
-    //     setVideoChat(updatedMessages);
-    // }
-
     function onMessageReceived(message) {
-        console.log('message received', message);
         setVideoChat(prev => [...prev, message]);
         if(message.senderId !== meetingDetails.localParticipant.id){
             notification.play();   
@@ -37,7 +30,6 @@ function TabScreen({
 
     const { publish } = usePubSub(CHAT, {
         onMessageReceived,
-        // onOldMessagesReceived,
     });
 
 

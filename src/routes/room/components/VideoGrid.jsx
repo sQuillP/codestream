@@ -14,7 +14,6 @@ export default function VideoGrid({
     participants
 }) {
 
-    console.log('participants', participants);
     const vgRef = useRef();
     const [height, setHeight] = useState(0);
     const [width, setWidth] = useState(0);

@@ -29,7 +29,6 @@ function Chat({
     }
 
     function onSendMessage() {
-        console.log('publishing message', chatMessage);
         publish(chatMessage,{persist: true}, null);
         setChatMessage("");
     }

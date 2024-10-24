@@ -46,17 +46,10 @@ export default function Home() {
                 onSubmitRoomDetails={onSubmitRoomDetails}
                 createNewMeeting={createNewMeeting}
             />
-            {/* <div className="bubbles">
-                {
-                Yeahhh i thought about putting in some cool hacker bubbles or something. Might do this later.
-                    bubbles.map((_,i)=> {
-                        return <CodeStreak key={`${i}`}/>
-                    })
-                }
-            </div> */}
+           
             <div className="home-content">
                 <h1 className="text home-header">Devstreamer Does it All</h1>
-                <p className="home-action text">Bringing powerful tools like live chat,code editing and submissions!</p>
+                <p className="home-action text">Bringing powerful tools like live chat, filesharing, code editing, and submissions!</p>
                 <div className="button-container">
                     <button
                         className="home-button"

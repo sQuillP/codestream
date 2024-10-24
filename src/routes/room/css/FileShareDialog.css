@@ -1,0 +1,21 @@
+
+
+.file-col-container {
+    height: 300px;
+}
+
+.file-col:hover {
+    /* This is due to inline styles */
+    background: var(--bg-2) !important
+}
+
+.file-col {
+    padding: 7px;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+.files-list-container {
+    max-height: 100px;
+    overflow-y: auto;
+}

@@ -6,10 +6,7 @@ function Terminal({
     textContent
 }) {
 
-    console.log('reloading terminal');
     const formattedContent = textContent.split("\n");
-    // const formattedContent = new Array(50).fill('test')
-
 
     return (
         <div className="terminal-container">

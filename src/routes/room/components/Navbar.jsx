@@ -10,8 +10,12 @@ import {
     DialogActions,
     Typography,
     Button,
+    Snackbar,
+    Alert,
 } from "@mui/material"
 
+
+import { Buffer } from "buffer";
 
 import FileShareDialog from "./FileShareDialog";
 
@@ -31,9 +35,17 @@ import { useNavigate } from "react-router-dom";
 
 import { useState, memo } from "react";
 import { useMeeting, usePubSub, useFile } from "@videosdk.live/react-sdk";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import { FILESHARE_PUBSUB } from "../../../http/Channels";
+
+
+
+
+
+const SHARED_FILES  = 0;
+const UPLOAD_FILE = 1;
+
 
 function Navbar({
     joined,
@@ -55,9 +67,11 @@ function Navbar({
     const [enableVideo, setEnableVideo] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
     const [openFileShareDialog, setOpenFileShareDialog] = useState(false);
+    const [openFileShareSnackbar, setOpenFileShareSnackbar] = useState(false);
     
 
-    const [fileURLs, setFileURLs] = useState([]);
+    const [sharedFileData, setSharedFileData] = useState([]);
+
     const { uploadBase64File, fetchBase64File } = useFile();
 
     const navigate = useNavigate();
@@ -69,41 +83,18 @@ function Navbar({
         setCopyMessage("Copied!")
     }
 
-
     const fileSharePubSub = usePubSub(FILESHARE_PUBSUB, {
         onMessageReceived: (message)=> {
-            setFileURLs([...fileURLs, message.message]);
+            console.log(sharedFileData);
+            setSharedFileData((fd)=> [...fd, {url: message.message, name: message.payload.name}]);
+            setOpenFileShareSnackbar(true);
         },
         onOldMessagesReceived: (messages)=> {
-            const transformedMessages = messages.map(m => m.message);
-            setFileURLs(transformedMessages);
+            const transformedMessages = messages.map(m => {return {url: m.message, name: m.payload.name}});
+            setSharedFileData(transformedMessages);
         }
     });
 
-
-    async function onSendFile() {
-        try {
-            const base64Data = "base64data";
-            const fileName = 'filename';
-
-            const fileURL = await uploadBase64File({base64Data, token: videoSDKToken, fileName});
-            fileSharePubSub.publish(fileURL,)
-        } catch(error) {
-
-        }
-    }
-
-
-    async function onDownloadFile() {
-        try {
-            const url = "url";
-            const b64FileContents = await fetchBase64File({url, token:videoSDKToken});
-
-
-        } catch(error) {
-
-        }
-    }
 
 
     function onEndCall() {
@@ -121,12 +112,63 @@ function Navbar({
         navigate('/');
     }
 
+
+    // This will download a text file. 
+    function downloadBase64File(base64, fileName) {
+        const link = document.createElement('a');
+        link.href = base64;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    async function handleUseFileAction(currentTab,filesToUpload, selectedFiles) {
+        //No action should be taken if user is not joined.
+        setOpenFileShareDialog(false);
+        if(joined === false) {return;}
+        try {
+            if(currentTab === UPLOAD_FILE) {
+                // const uploadURLS = [];
+                for(let i = 0; i<filesToUpload.length; i++) {
+                    const url = await uploadBase64File({
+                        base64Data: filesToUpload[i].b64, 
+                        token:videoSDKToken, 
+                        fileName: filesToUpload[i].name
+                    });
+                    // uploadURLS.push(url);
+                    fileSharePubSub.publish(url, {persist: true}, {name:filesToUpload[i].name});
+                }
+            } else if(currentTab === SHARED_FILES) {
+                for( let i = 0; i < selectedFiles.length; i++) {
+                    const encodedb64Data = await fetchBase64File({url: selectedFiles[i].url, token:videoSDKToken});
+                    const decodedButStillB64Data = Buffer.from(encodedb64Data,'base64').toString('ascii')
+                    downloadBase64File(decodedButStillB64Data,selectedFiles[i].name)
+                }
+            }
+
+            //notify that everything is finished.
+        }catch(error) {
+            console.log("Just notify of an error");
+        }
+    }
+
     /**
      * TODO:
      * meeting id, mute, video, settings, and end
      */
     return (
         <>
+            <Snackbar
+                open={openFileShareSnackbar}
+                onClose={()=> setOpenFileShareSnackbar(false)}
+                autoHideDuration={3000}
+                anchorOrigin={{vertical:"bottom", horizontal:'center'}}
+            >
+                <Alert sx={{width:'100%'}} variant="filled" severity="success">
+                    Notice: a file has been shared!
+                </Alert>
+            </Snackbar>
             <Dialog
                 open={openSettings}
                 onClose={onCloseSettings}
@@ -172,7 +214,12 @@ function Navbar({
             </Dialog>
             <FileShareDialog
                 open={openFileShareDialog}
+                sharedFiles={sharedFileData}
                 onClose={()=> setOpenFileShareDialog(false)}
+                videoSDKToken={videoSDKToken}
+                publish={fileSharePubSub.publish}
+                joined={joined}
+                handleUseFileAction={handleUseFileAction}
             />
             <div className="navbar-container">
                 <Stack height={'100%'} direction='row' alignItems={'center'} justifyContent={"space-between"}>

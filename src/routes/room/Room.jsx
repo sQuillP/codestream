@@ -1,8 +1,7 @@
 import "./css/Room.css";
-import { useLocation } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import Editor from '@monaco-editor/react';
-import {Stack, IconButton, Tooltip, Button, Snackbar, Alert, CircularProgress, useMediaQuery} from '@mui/material';
+import {Stack, IconButton, Tooltip, Button, Snackbar, Alert, CircularProgress} from '@mui/material';
 
 import { useMeeting, usePubSub } from "@videosdk.live/react-sdk";
 import { Buffer } from "buffer";
@@ -36,7 +35,6 @@ const NOT_SUBMITTING = 'not-submitting';
 
 export default function Room({refreshToken, videoSDKToken}) {
 
-    const {state} = useLocation();
     const editorRef = useRef();
 
     //UI state for dragging windows
@@ -60,7 +58,6 @@ export default function Room({refreshToken, videoSDKToken}) {
     const lconfig = languages[language];
 
     const [editorValue, setEditorValue] = useState(lconfig.defaultValue);
-    const [syncedEditor, setSyncedEditor] = useState(false);
 
     const [submittingCode, setSubmittingCode] = useState(false);
     const [terminalContent, setTerminalContent] = useState("Output will appear here.");
@@ -146,6 +143,7 @@ export default function Room({refreshToken, videoSDKToken}) {
 
     const submissionResultPubSub = usePubSub(SUBMISSION_RESULT, {
         onMessageReceived:(message)=> {
+            console.log('setting terminal content');
             setTerminalContent(message.message);
         }
     });
@@ -213,14 +211,8 @@ export default function Room({refreshToken, videoSDKToken}) {
 
     async function onSubmitCode() {
         try {
-            // setSubmittingCode(true);
             submissionPubSub.publish(SUBMITTING, null, null);
             const source_codeb64 = Buffer.from(editorValue).toString('base64');
-            console.log('submitted body', { 
-                source_code:source_codeb64,
-                stdin: null,//might change this later
-                language_id: Judge0_languages[lconfig.language]
-            })
             const judge0_response = await judge0.post('/judge0',{ 
                 source_code:source_codeb64,
                 stdin: null,//might change this later
@@ -228,16 +220,10 @@ export default function Room({refreshToken, videoSDKToken}) {
             });
             console.log('raw judge0 response', judge0_response.data)
             const {stderr, stdout, compile_output} = judge0_response.data.data;
-
             const judge0_output = stdout || compile_output;
             const judge0_stderr = Buffer.from((stderr || ""), 'base64').toString("ascii");
             const decodedBase64 = Buffer.from((judge0_output||""),'base64').toString('ascii') + '\n'+judge0_stderr;
             setTerminalContent(decodedBase64);
-
-            // setTimeout(()=> {
-            //     setSubmittingCode(false);
-            //     submissionPubSub.publish(NOT_SUBMITTING, null, null);
-            // },3000);
         } catch(error) {
             console.log("Error submitting code", error);
         } finally {
@@ -247,8 +233,6 @@ export default function Room({refreshToken, videoSDKToken}) {
 
     }
 
-
-    console.log("in room:::participants", participants);
 
     return (
         <>

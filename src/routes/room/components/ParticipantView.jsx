@@ -14,9 +14,6 @@ export default memo(function ParticipantView(props) {
     const micRef = useRef(null);
     const { webcamStream, micStream, webcamOn, micOn, isLocal, displayName } =
       useParticipant(props.participantId);
-    // console.log({webcamStream, micStream, webcamOn, micOn, isLocal, displayName})
-
-    const [calcWidth, setCalcWidth] = useState(0);
 
     const videoStream = useMemo(() => {
       if (webcamOn && webcamStream) {
