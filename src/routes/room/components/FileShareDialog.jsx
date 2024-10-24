@@ -1,38 +1,21 @@
 import "../css/FileShareDialog.css";
-import { Button, CustomTabPanel, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tab, Tabs, Stack, Box } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Tab, Tabs, Stack } from "@mui/material";
 import { useEffect, useRef, useState } from "react";
 import { Buffer } from "buffer";
 
 import CheckCircleRoundedIcon from '@mui/icons-material/CheckCircleRounded';
-import { CheckCircle, CheckCircleRounded } from "@mui/icons-material";
 
-import { useFile } from "@videosdk.live/react-sdk";
 
 const SHARED_FILES  = 0;
 const UPLOAD_FILE = 1;
 
 
 
-const dummy_files = [
-    {name:"My_resume.pdf"},
-    {name:"My-degree.pdf"},
-    {name: 'my-gpa.pdf'},
-    // {name:"My_rewsume.pdf"},
-    // {name:"My-degweree.pdf"},
-    // {name: 'my-gpwea.pdf'},
-    // {name:"My_resumwe.pdf"},
-    // {name:"My-degreee.pdf"},
-    // {name: 'my-gpaq.pdf'}
-];
-
 
 export default function FileShareDialog({
     sharedFiles=[],
-    joined,
     open,
     onClose,
-    videoSDKToken,
-    publish,
     handleUseFileAction
 }) {
 
@@ -40,9 +23,6 @@ export default function FileShareDialog({
     const [currentTab, setCurrentTab] = useState(0);
     const [filesToUpload, setFilesToUpload] = useState([]);
     const [selectedFiles, setSelectedFiles] = useState([]);
-    const [uploadingBase64File, setUploadingBase64File] = useState(false);
-    const { uploadBase64File, fetchBase64File } = useFile();
-    const [snackbarError, setSnackbarError] = useState("");
 
     const chooseFileRef = useRef();
 

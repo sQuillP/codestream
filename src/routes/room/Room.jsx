@@ -206,7 +206,7 @@ export default function Room({refreshToken, videoSDKToken}) {
 
     useEffect(()=> {
         submissionResultPubSub.publish(terminalContent,null,null);
-    },[terminalContent]);
+    },[terminalContent]); // eslint-disable-line -- we can do without adding pubsub as a dependency
 
 
     async function onSubmitCode() {
@@ -218,7 +218,6 @@ export default function Room({refreshToken, videoSDKToken}) {
                 stdin: null,//might change this later
                 language_id: Judge0_languages[lconfig.language]
             });
-            console.log('raw judge0 response', judge0_response.data)
             const {stderr, stdout, compile_output} = judge0_response.data.data;
             const judge0_output = stdout || compile_output;
             const judge0_stderr = Buffer.from((stderr || ""), 'base64').toString("ascii");

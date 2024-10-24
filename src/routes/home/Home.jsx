@@ -11,15 +11,13 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 
 
 //component
-import CodeStreak from "./components/CodeStreak";
-import { IconButton, Tooltip, Stack, useMediaQuery } from "@mui/material";
+import { IconButton, Tooltip, Stack } from "@mui/material";
 
 
 export default function Home() {
 
     const [openJoinRoomDialog, setOpenJoinRoomDialog] = useState(false);
     const navigate = useNavigate();
-    // const bubbles = new Array(30).fill(0)
 
     const[createNewMeeting, setCreateNewMeeting] = useState(false);
 

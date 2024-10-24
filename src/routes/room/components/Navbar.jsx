@@ -58,13 +58,11 @@ function Navbar({
         toggleWebcam, 
         localMicOn, 
         localWebcamOn, 
-        meetingId,
         leave,
     } = useMeeting();
 
     const smallScreen = useMediaQuery("(max-width: 810px)");
     const [copyMessage, setCopyMessage] = useState("Copy room ID");
-    const [enableVideo, setEnableVideo] = useState(false);
     const [openSettings, setOpenSettings] = useState(false);
     const [openFileShareDialog, setOpenFileShareDialog] = useState(false);
     const [openFileShareSnackbar, setOpenFileShareSnackbar] = useState(false);
@@ -217,7 +215,6 @@ function Navbar({
                 sharedFiles={sharedFileData}
                 onClose={()=> setOpenFileShareDialog(false)}
                 videoSDKToken={videoSDKToken}
-                publish={fileSharePubSub.publish}
                 joined={joined}
                 handleUseFileAction={handleUseFileAction}
             />
@@ -282,7 +279,7 @@ function Navbar({
                         </Tooltip>
                     
                         <Tooltip
-                            title={enableVideo ? "Disable Video Share":"Share video"}
+                            title={localWebcamOn ? "Disable Video Share":"Share video"}
                         >
                             <IconButton
                                 size="large"

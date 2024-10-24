@@ -1,3 +1,5 @@
+//Note: source code for the source code.
+//Plug this into the code editor and vuala!
 
 export default Object.freeze({
     "python": {
